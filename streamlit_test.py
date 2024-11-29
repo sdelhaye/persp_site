@@ -216,3 +216,5 @@ plt.legend(
 plt.tight_layout()
 # Afficher le graphique dans Streamlit
 st.pyplot(fig)
+
+st.write("Les \% sont la part relevé par le BRAT dans toute la catégorie. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver")
