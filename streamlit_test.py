@@ -17,6 +17,10 @@ code="sitex"
 sitex2_occ_block=load_csv('tables/brat_releve.csv')
 sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+'.csv')
 diff_occ_fin=load_csv('tables/diff_releve_db'+code+'.csv')
+# Transform string column into a list columnt
+diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
+diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
+diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
 
 
 st.write("SITEX2.0 - Comparaison BD et relevé du BRAT")
