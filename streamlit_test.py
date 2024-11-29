@@ -5,9 +5,7 @@ import numpy as np
 import ast
 import matplotlib.pyplot as plt
 
-@st.cache_data
-def load_geodata(filepath):
-    return gpd.read_file(filepath)
+
 @st.cache_data
 def load_csv(filepath):
     return pd.read_csv(filepath, sep=";")
@@ -29,7 +27,9 @@ diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_ev
 
 st.write("SITEX2.0 - Comparaison BD et relevé du BRAT")
 categ=st.radio("Quelle catégorie voulez-vous voir ?",
-               ["Logement", "Hôtel", "Bureau","Industrie"])
+               ["Logement", "Hôtel", "Bureau","Industrie","Commerce","Ecole","Soin",
+                "Culte","Transport","Ambassade","Aide à la pop","Divertissement",
+                "Energie","Sport"])
 column_txt=st.radio("Voulez voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
 
@@ -42,8 +42,26 @@ elif categ=="Bureau":
     nomen="03"
 elif categ=="Industrie":
     nomen="04"
-
-
+elif categ=="Commerce":
+    nomen="05"
+elif categ=="Ecole":
+    nomen="06"
+elif categ=="Soin":
+    nomen="07"
+elif categ=="Culte":
+    nomen="08"
+elif categ=="Transport":
+    nomen="09"
+elif categ=="Ambassade":
+    nomen="10"
+elif categ=="Aide à la pop":
+    nomen="11"
+elif categ=="Divertissement":
+    nomen="13"
+elif categ=="Energie":
+    nomen="14"
+elif categ=="Sport":
+    nomen="16"
 if column_txt=="Le nombre d'occupation":
     column="count"
 elif column_txt=="La superficie plancher":
