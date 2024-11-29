@@ -80,9 +80,9 @@ elif code=="pras":
 
 if general2=="Barre/histogramme":
     # Pour avoir l'échelle renseigné en terme de nomre de bâtiment et non d'occupations
-    # for j in range(2,max(diff_occ_fin["len_occ_brat"])+1):
-    #     category_pivot_total_brat.loc[j]=category_pivot_total_brat.loc[j]/j
-    #     category_pivot_total_db.loc[j]=category_pivot_total_db.loc[j]/j
+    for j in range(2,max(diff_occ_fin["len_occ_brat"])+1):
+        category_pivot_total_brat.loc[j]=category_pivot_total_brat.loc[j]/j
+        category_pivot_total_db.loc[j]=category_pivot_total_db.loc[j]/j
     
     fig, ax = plt.subplots(figsize=(8, 8))
     ax = plt.gca()
@@ -126,8 +126,8 @@ elif general2=="Cammembert/circulaire":
     category_total_db = category_pivot_total_db.sum()
 
     # Vérifier que les tailles sont non négatives
-    sizes_brat = np.maximum(category_total_brat.values, 0)
-    sizes_db = np.minimum(np.maximum(category_total_db.values, 0), sizes_brat)
+    sizes_brat = category_total_brat.values
+    sizes_db = category_total_db.values
 
     # Couleurs pour chaque catégorie
     labels = category_total_brat.index
