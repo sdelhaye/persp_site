@@ -79,30 +79,33 @@ elif code=="pras":
 
 
 if general2=="Barre/histogramme":
+    category_pivot_total_brat2=category_pivot_total_brat
+    category_pivot_total_db2=category_pivot_total_db
+
     # Pour avoir l'échelle renseigné en terme de nomre de bâtiment et non d'occupations
     for j in range(2,max(diff_occ_fin["len_occ_brat"])+1):
-        category_pivot_total_brat.loc[j]=category_pivot_total_brat.loc[j]/j
-        category_pivot_total_db.loc[j]=category_pivot_total_db.loc[j]/j
+        category_pivot_total_brat2.loc[j]=category_pivot_total_brat2.loc[j]/j
+        category_pivot_total_db2.loc[j]=category_pivot_total_db2.loc[j]/j
     
     fig, ax = plt.subplots(figsize=(8, 8))
     ax = plt.gca()
 
-    for col in category_pivot_total_brat.columns:
+    for col in category_pivot_total_brat2.columns:
         # Plot des barres empilées
         ax.bar(
-            category_pivot_total_brat.index,  # x
-            category_pivot_total_brat[col],  # y
-            bottom=category_pivot_total_brat.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col],  # Position empilée
+            category_pivot_total_brat2.index,  # x
+            category_pivot_total_brat2[col],  # y
+            bottom=category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col],  # Position empilée
             color=color_dict[col],  # Couleur
             label=col  # Légende
         )
 
         # Superposition des hachures pour `category_pivot_total_db`
         ax.bar(
-            category_pivot_total_brat.index,  # x
-            category_pivot_total_db[col],  # y
-            bottom=(category_pivot_total_brat.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]
-                + category_pivot_total_brat[col] - category_pivot_total_db[col]),  # Position : sommet de la barre initiale
+            category_pivot_total_brat2.index,  # x
+            category_pivot_total_db2[col],  # y
+            bottom=(category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]
+                + category_pivot_total_brat2[col] - category_pivot_total_db2[col]),  # Position : sommet de la barre initiale
             facecolor="none",  # Pas de remplissage
             edgecolor="black",  # Couleur des hachures
             hatch="//"  # Style des hachures
