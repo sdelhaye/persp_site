@@ -2,7 +2,6 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import ast
 import matplotlib.pyplot as plt
 
 
@@ -54,7 +53,6 @@ category_pivot_total_brat = category_pivot_total_brat.fillna(0) # Contient le nb
 category_pivot_total_db = category_pivot_total_db.fillna(0) # Contient le nbre d'occup manquantes de notre db par bâtiment selon le nbre d'occupation différente
 
 
-
 if code=="sitex":
     # Définir les couleurs pour les catégories
     color_dict = {
@@ -82,9 +80,10 @@ elif code=="pras":
 
 if general2=="Barre/histogramme":
     # Pour avoir l'échelle renseigné en terme de nomre de bâtiment et non d'occupations
-    for j in range(2,max(diff_occ_fin["len_occ_brat"])+1):
-        category_pivot_total_brat.loc[j]=category_pivot_total_brat.loc[j]/j
-        category_pivot_total_db.loc[j]=category_pivot_total_db.loc[j]/j
+    # for j in range(2,max(diff_occ_fin["len_occ_brat"])+1):
+    #     category_pivot_total_brat.loc[j]=category_pivot_total_brat.loc[j]/j
+    #     category_pivot_total_db.loc[j]=category_pivot_total_db.loc[j]/j
+    
     fig, ax = plt.subplots(figsize=(8, 8))
     ax = plt.gca()
 
