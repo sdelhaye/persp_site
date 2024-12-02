@@ -24,8 +24,6 @@ diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.
 diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
 diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
 
-st.set_page_config(layout="wide")
-
 
 st.write("SITEX2.0 - Comparaison BD et relevé du BRAT")
 st.write("Ce qu'il nous manque à notre DB")
