@@ -325,7 +325,7 @@ elif general=="La superficie plancher":
     plt.tight_layout()
     st.pyplot(fig)
 
-
+st.write("Les \% montrent la part de la catégorie par rapport à toute les catégories relevées par le BRAT. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver")
 
 ############################# Par catgéorie
 
