@@ -24,8 +24,17 @@ diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.
 diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
 diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
 
-st.markdown('<p class="big-font">SITEX2.0 - Comparaison BD et relevé du BRAT</p>', unsafe_allow_html=True)
-st.write("SITEX2.0 - Comparaison BD et relevé du BRAT")
+st.set_page_config(layout="wide")
+
+st.markdown("""
+<style>
+.big-font {
+    font-size:300px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+st.markdown('<p class="big-font">Hello World !!</p>', unsafe_allow_html=True)st.write("SITEX2.0 - Comparaison BD et relevé du BRAT")
 st.write("Ce qu'il nous manque à notre DB")
 general=st.radio("Voulez-vous voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
