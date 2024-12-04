@@ -362,7 +362,14 @@ elif general=="La superficie plancher":
 st.write("Les \% montrent la part de la catégorie par rapport à toute les catégories relevées par le BRAT. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver")
 
 ############################# Par catgéorie
-
+st.markdown(
+    """
+    <p style='text-align: left; font-size: 20px; color: black;'>
+    Ce qu'il manque à notre DB comparé au relevé du BRAT au sein de chaque catégorie SITEX
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 st.write("Ce qu'il nous manque par catégorie Sitex")
 categ=st.radio("Quelle catégorie voulez-vous voir ?",
                ["Logement", "Hôtel", "Bureau","Industrie","Commerce","Ecole","Soin",
