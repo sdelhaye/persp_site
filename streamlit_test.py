@@ -48,7 +48,7 @@ general2=st.radio("Quel type de graphique voulez-vous voir:",
                ["Cammembert/circulaire", "Barre/histogramme" ])
 
 ## Graphique de base 
-label=["Logement","Hôtel","Bureau","Act. productives","Commerce","Ecole","Soin","Culte",
+legend=["Logement","Hôtel","Bureau","Act. productives","Commerce","Ecole","Soin","Culte",
        "Transport","Ambassade","Aide à la population","Divertissement","Energie","Sport"]
 if general=="Le nombre d'occupation":
     # Créer un DataFrame vide pour stocker les résultats cumulés
@@ -218,7 +218,7 @@ if general=="Le nombre d'occupation":
         plt.gca().add_artist(centre_circle)
         # Ajouter une légende en dehors du graphique
         plt.legend(
-            wedges, label, 
+            wedges, legend, 
             title="Légende", 
             loc="center left", 
             bbox_to_anchor=(1.05, 0.5),  # Légende positionnée à droite, centrée verticalement
