@@ -49,7 +49,8 @@ general2=st.radio("Quel type de graphique voulez-vous voir:",
 
 ## Graphique de base 
 legend=["Logement","Hôtel","Bureau","Act. productives","Commerce","Ecole","Soin","Culte",
-       "Transport","Ambassade","Aide à la population","Divertissement","Energie","Sport"]
+       "Transport","Ambassade","Aide à la population","Divertissement","Energie","Sport",
+       "Production immatériel"]
 if general=="Le nombre d'occupation":
     # Créer un DataFrame vide pour stocker les résultats cumulés
     category_pivot_total_brat = pd.DataFrame()
