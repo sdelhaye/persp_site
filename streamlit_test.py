@@ -141,7 +141,7 @@ if general=="Le nombre d'occupation":
         plt.title('Comparaison par rapport au relevé du BRAT', fontsize=14)
 
         # Ajouter une légende
-        ax.legend(title="Catégories", bbox_to_anchor=(1.05, 1), loc="upper left")
+        ax.legend(legend,title="Catégories", bbox_to_anchor=(1.05, 1), loc="upper left")
         # Ajuster la présentation
         plt.tight_layout()   
         st.pyplot(fig)
