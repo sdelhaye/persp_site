@@ -25,7 +25,14 @@ diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.litera
 diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
 
 
-st.write("SITEX2.0 - Comparaison BD et relevé du BRAT")
+st.markdown(
+    """
+    <h1 style='text-align: center; font-size: 36px; color: black;'>
+    SITEX2.0 - Comparaison BD et relevé du BRAT
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
 st.write("Ce qu'il nous manque à notre DB")
 general=st.radio("Voulez-vous voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
