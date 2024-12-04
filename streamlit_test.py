@@ -114,14 +114,14 @@ if general=="Le nombre d'occupation":
         fig, ax = plt.subplots(figsize=(8, 8))
         ax = plt.gca()
 
-        for col in category_pivot_total_brat2.columns:
+        for i, col in enumerate(category_pivot_total_brat2.columns):
             # Plot des barres empilées
             ax.bar(
                 category_pivot_total_brat2.index,  # x
                 category_pivot_total_brat2[col],  # y
                 bottom=category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col],  # Position empilée
                 color=color_dict[col],  # Couleur
-                label=col  # Légende
+                label=legend[i]  # Légende
             )
 
             # Superposition des hachures pour `category_pivot_total_db`
