@@ -48,7 +48,8 @@ general2=st.radio("Quel type de graphique voulez-vous voir:",
                ["Cammembert/circulaire", "Barre/histogramme" ])
 
 ## Graphique de base 
-
+label=["Logement","Hôtel","Bureau","Act. productives","Commerce","Ecole","Soin","Culte",
+       "Transport","Ambassade","Aide à la population","Divertissement","Energie","Sport"]
 if general=="Le nombre d'occupation":
     # Créer un DataFrame vide pour stocker les résultats cumulés
     category_pivot_total_brat = pd.DataFrame()
@@ -215,6 +216,14 @@ if general=="Le nombre d'occupation":
         # Ajouter un cercle blanc au centre pour donner un effet de "donut"
         centre_circle = plt.Circle((0, 0), 0.65, fc='white')
         plt.gca().add_artist(centre_circle)
+        # Ajouter une légende en dehors du graphique
+        plt.legend(
+            wedges, label, 
+            title="Légende", 
+            loc="center left", 
+            bbox_to_anchor=(1.05, 0.5),  # Légende positionnée à droite, centrée verticalement
+            fontsize=10
+        )   
         # Supprimer les axes x et y
         plt.axis('off')
 
