@@ -340,6 +340,15 @@ elif general=="La superficie plancher":
     # Ajouter un cercle blanc au centre pour donner un effet de "donut"
     centre_circle = plt.Circle((0, 0), 0.65, fc='white')
     plt.gca().add_artist(centre_circle)
+
+    plt.legend(
+        wedges, legend, 
+        title="Légende", 
+        loc="center left", 
+        bbox_to_anchor=(1.05, 0.5),  # Légende positionnée à droite, centrée verticalement
+        fontsize=10
+    )       
+
     # Supprimer les axes x et y
     plt.axis('off')
 
