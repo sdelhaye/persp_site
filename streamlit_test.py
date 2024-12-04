@@ -35,9 +35,9 @@ st.markdown(
 )
 st.markdown(
     """
-    <h1 style='text-align: left; font-size: 22px; color: black;'>
-    "Ce qu'il nous manque à notre DB"
-    </h1>
+    <p style='text-align: left; font-size: 20px; color: black;'>
+    Ce qu'il nous manque à notre DB comparé au relevé du BRAT selon les catégories SITEX
+    </p>
     """,
     unsafe_allow_html=True
 )
