@@ -33,7 +33,15 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-st.write("Ce qu'il nous manque à notre DB")
+st.markdown(
+    """
+    <h1 style='text-align: left; font-size: 22px; color: black;'>
+    "Ce qu'il nous manque à notre DB"
+    </h1>
+    """,
+    unsafe_allow_html=True
+)
+
 general=st.radio("Voulez-vous voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
 general2=st.radio("Quel type de graphique voulez-vous voir:",
