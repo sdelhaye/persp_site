@@ -234,6 +234,24 @@ if general=="Le nombre d'occupation":
         plt.tight_layout()
         st.pyplot(fig)
 elif general=="La superficie plancher":
+    # Couleurs pour chaque catégorie
+    if code=="sitex":
+        # Définir les couleurs pour les catégories
+        color_dict = {
+            "01": "#FEAB4E",    "02": "#FE7E7C",    "03": "#80A0D3",    "04": "#6C61AE",
+            "05": "#E6A0C8",    "06": "#58C9D7",    "07": "#FF6961",    "08": "#FFD700",
+            "09": "#00FF00",    "10": "#FFB6C1",    "11": "#FF6347",    "12": "#8A2BE2",
+            "13": "#4682B4",    "14": "#9ACD32",    "16": "#6B8E23",    "20": "#B22222"}  
+ 
+    elif code=="pras":
+        color_dict = {
+            "logement": "#FEAB4E",
+            "hôtel": "#FE7E7C",
+            "bureau": "#80A0D3",
+            "commerce": "#E6A0C8",
+            "industrie": "#6C61AE",
+            "équipements": "#58C9D7",
+        }    
     data = sitex2_occ_block
     if code=="pras":
         data=data[data["regroupement_fill"].isna()==False]
@@ -254,6 +272,108 @@ elif general=="La superficie plancher":
     result_df=pd.merge(result,miss_sp,left_on=colname,right_on="nomen_miss")
     result_df["diff_area (%)"]=result_df["miss_area"]/result_df["area"]*100
 
+    if general2=="Barre/histogramme":
+        # Liste pour stocker les résultats
+        results = []
+        results_all=[]
+
+        for number in range(1, max(diff_occ_fin["len_occ_brat"]) + 1):  
+            # Filtrer les lignes où len_occ_brat == number
+            df_filtered = diff_occ_fin[diff_occ_fin["len_occ_brat"] == number]
+
+            # Obtenir tous les id_bat concernés
+            relevant_ids = df_filtered["id_bat"].unique()
+
+            # Filtrer les données correspondantes dans `data`
+            bat = data[data["id_bat"].isin(relevant_ids)]
+
+            # Grouper par nomen et id_bat pour calculer les sommes
+            batgroup = bat.groupby(["id_bat", "nomen"]).agg(
+                sum_area=("area", "sum")
+            ).reset_index()
+
+            # Récupérer les miss_nomen_db pour chaque id_bat
+            miss_nomen_map = df_filtered.set_index("id_bat")["miss_nomen_db"].explode()
+
+            # Filtrer pour ne garder que les nomen manquants
+            batgroup["is_missing"] = batgroup.apply(
+                lambda row: row["nomen"] in miss_nomen_map[miss_nomen_map.index == row["id_bat"]].values, axis=1
+            )
+            batgroup_miss = batgroup[batgroup["is_missing"]]
+
+            # Grouper par nomen pour obtenir les sommes globales
+            batmiss_final = batgroup_miss.groupby("nomen").agg(
+                total_area=("sum_area", "sum")
+            )
+            batall_final=batgroup.groupby("nomen").agg(
+                total_area=("sum_area", "sum")
+            )
+
+            # Ajouter une colonne pour identifier le numéro
+            batmiss_final["number"] = number
+            batall_final["number"] = number
+
+            # Ajouter le résultat au tableau global
+            results.append(batmiss_final)
+            results_all.append(batall_final)
+
+        # Concaténer tous les résultats
+        final_df = pd.concat(results)
+        final_all_df=pd.concat(results_all)
+
+        # Créer le tableau croisé
+        pivot_table = final_df.pivot_table(
+            index=final_df.index,  # Catégories (indices de batmiss_final)
+            columns="number",      # Les différents numbers
+            values="total_area",   # Les valeurs de total_area
+            aggfunc="sum",         # Fonction d'agrégation
+            fill_value=0           # Remplir les valeurs manquantes avec 0
+        )
+        pivot_table_all = final_all_df.pivot_table(
+            index=final_all_df.index,  # Catégories (indices de batmiss_final)
+            columns="number",      # Les différents numbers
+            values="total_area",   # Les valeurs de total_area
+            aggfunc="sum",         # Fonction d'agrégation
+            fill_value=0           # Remplir les valeurs manquantes avec 0
+        )
+       # Inverser les lignes et colonnes du pivot_table
+        pivot_table = pivot_table.transpose()
+        pivot_table_all = pivot_table_all.transpose()
+        fig, ax = plt.subplots(figsize=(8, 8))
+        ax = plt.gca()
+
+        for i, col in enumerate(pivot_table.columns):
+            # Plot des barres empilées
+            ax.bar(
+                pivot_table_all.index,  # x
+                pivot_table_all[col],  # y
+                bottom=pivot_table_all.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col],  # Position empilée
+                color=color_dict[col],  # Couleur
+                label=legend[i]  # Légende
+            )
+
+            # Superposition des hachures pour `category_pivot_total_db`
+            ax.bar(
+                pivot_table_all.index,  # x
+                pivot_table[col],  # y
+                bottom=(pivot_table_all.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]
+                    + pivot_table_all[col] - pivot_table[col]),  # Position : sommet de la barre initiale
+                facecolor="none",  # Pas de remplissage
+                edgecolor="black",  # Couleur des hachures
+                hatch="//"  # Style des hachures
+            )
+        # Ajouter des labels et un titre
+        plt.xlabel("Nombre d'occupations différentes", fontsize=12)
+        plt.ylabel("Superficie plancher (m²)", fontsize=12)
+
+        plt.title('Comparaison par rapport au relevé du BRAT', fontsize=14)
+
+        # Ajouter une légende
+        ax.legend(title="Catégories", bbox_to_anchor=(1.05, 1), loc="upper left")
+        # Ajuster la présentation
+        plt.tight_layout()   
+        st.pyplot(fig)
+
     # Étape 1 : Calculer les totaux des occurrences pour chaque catégorie
     category_total_brat = result_df["area"]
     # ce qu'il nous manque dans la DB
@@ -263,24 +383,7 @@ elif general=="La superficie plancher":
     sizes_brat = np.maximum(category_total_brat.values, 0)
     sizes_db = np.minimum(np.maximum(category_total_db.values, 0), sizes_brat)
 
-    # Couleurs pour chaque catégorie
-    if code=="sitex":
-        # Définir les couleurs pour les catégories
-        color_dict = {
-            "01": "#FEAB4E",    "02": "#FE7E7C",    "03": "#80A0D3",    "04": "#6C61AE",
-            "05": "#E6A0C8",    "06": "#58C9D7",    "07": "#FF6961",    "08": "#FFD700",
-            "09": "#00FF00",    "10": "#FFB6C1",    "11": "#FF6347",    "12": "#8A2BE2",
-            "13": "#4682B4",    "14": "#9ACD32",    "16": "#6B8E23",    "20": "#B22222"}  
- 
-    elif code=="pras":
-        color_dict = {
-            "logement": "#FEAB4E",
-            "hôtel": "#FE7E7C",
-            "bureau": "#80A0D3",
-            "commerce": "#E6A0C8",
-            "industrie": "#6C61AE",
-            "équipements": "#58C9D7",
-        }    
+
     labels = result_df[colname]
     colors = [color_dict.get(cat, '#dddddd') for cat in result_df[colname]]
 
@@ -365,7 +468,7 @@ st.write("Les \% montrent la part de la catégorie par rapport à toute les cat�
 st.markdown(
     """
     <p style='text-align: left; font-size: 20px; color: black;'>
-    Ce qu'il manque à notre DB comparé au relevé du BRAT au sein de chaque catégorie SITEX
+    Ce qu'il manque à notre DB comparé au relevé du BRAT au sein de chaque catégorie SITEX (niveau 2 de la nomenclature)
     </p>
     """,
     unsafe_allow_html=True
