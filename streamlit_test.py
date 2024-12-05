@@ -374,93 +374,94 @@ elif general=="La superficie plancher":
         plt.tight_layout()   
         st.pyplot(fig)
 
-    # Étape 1 : Calculer les totaux des occurrences pour chaque catégorie
-    category_total_brat = result_df["area"]
-    # ce qu'il nous manque dans la DB
-    category_total_db = result_df["miss_area"]
+    elif general2=="Cammembert/circulaire":
+        # Étape 1 : Calculer les totaux des occurrences pour chaque catégorie
+        category_total_brat = result_df["area"]
+        # ce qu'il nous manque dans la DB
+        category_total_db = result_df["miss_area"]
 
-    # Vérifier que les tailles sont non négatives
-    sizes_brat = np.maximum(category_total_brat.values, 0)
-    sizes_db = np.minimum(np.maximum(category_total_db.values, 0), sizes_brat)
+        # Vérifier que les tailles sont non négatives
+        sizes_brat = np.maximum(category_total_brat.values, 0)
+        sizes_db = np.minimum(np.maximum(category_total_db.values, 0), sizes_brat)
 
 
-    labels = result_df[colname]
-    colors = [color_dict.get(cat, '#dddddd') for cat in result_df[colname]]
+        labels = result_df[colname]
+        colors = [color_dict.get(cat, '#dddddd') for cat in result_df[colname]]
 
-    # Calculer les angles pour les secteurs du diagramme
-    angles = np.cumsum(sizes_brat) / np.sum(sizes_brat) * 360  # Angles cumulés
-    angles = np.concatenate(([0], angles))  # Inclure 0 pour l'angle de départ
-    from matplotlib.patches import Wedge
+        # Calculer les angles pour les secteurs du diagramme
+        angles = np.cumsum(sizes_brat) / np.sum(sizes_brat) * 360  # Angles cumulés
+        angles = np.concatenate(([0], angles))  # Inclure 0 pour l'angle de départ
+        from matplotlib.patches import Wedge
 
-    # Créer le graphique
-    fig, ax = plt.subplots(figsize=(8, 8))
+        # Créer le graphique
+        fig, ax = plt.subplots(figsize=(8, 8))
 
-    # Créer le pie chart initial avec les pourcentages
-    wedges, texts, autotexts = plt.pie(
-        sizes_brat, 
-        labels=labels, 
-        autopct='%1.1f%%',  # Pourcentages avec une décimale
-        colors=colors,  # Couleurs pour chaque catégorie
-        startangle=90, 
-        pctdistance=0.85,  # Position des pourcentages par rapport au centre
-        wedgeprops={'edgecolor': 'black'},  # Bordure noire pour chaque secteur
-        textprops={'color': 'black', 'fontsize': 10}  # Couleur et taille du texte des labels
-    )
+        # Créer le pie chart initial avec les pourcentages
+        wedges, texts, autotexts = plt.pie(
+            sizes_brat, 
+            labels=labels, 
+            autopct='%1.1f%%',  # Pourcentages avec une décimale
+            colors=colors,  # Couleurs pour chaque catégorie
+            startangle=90, 
+            pctdistance=0.85,  # Position des pourcentages par rapport au centre
+            wedgeprops={'edgecolor': 'black'},  # Bordure noire pour chaque secteur
+            textprops={'color': 'black', 'fontsize': 10}  # Couleur et taille du texte des labels
+        )
 
-    # Personnaliser les autotextes (les pourcentages) pour qu'ils apparaissent au centre
-    for autotext in autotexts:
-        autotext.set_fontsize(12)
-        autotext.set_fontweight('bold')
+        # Personnaliser les autotextes (les pourcentages) pour qu'ils apparaissent au centre
+        for autotext in autotexts:
+            autotext.set_fontsize(12)
+            autotext.set_fontweight('bold')
 
-    # Ajouter un cercle blanc au centre pour donner un effet de "donut"
-    centre_circle = plt.Circle((0, 0), 0.65, fc='white')
-    plt.gca().add_artist(centre_circle)
+        # Ajouter un cercle blanc au centre pour donner un effet de "donut"
+        centre_circle = plt.Circle((0, 0), 0.65, fc='white')
+        plt.gca().add_artist(centre_circle)
 
-    # Ajouter le nombre total d'occupations au centre
-    total_lines = category_total_brat.sum()
-    plt.text(
-        0, 0, f'{int(total_lines)} m²\n relevés par le BRAT',
-        horizontalalignment='center', verticalalignment='center', fontsize=16, fontweight='bold'
-    )
+        # Ajouter le nombre total d'occupations au centre
+        total_lines = category_total_brat.sum()
+        plt.text(
+            0, 0, f'{int(total_lines)} m²\n relevés par le BRAT',
+            horizontalalignment='center', verticalalignment='center', fontsize=16, fontweight='bold'
+        )
 
-    # Dessiner la superposition hachurée pour `category_total_db`
-    for i, (label, size_brat, size_db, color) in enumerate(zip(labels, sizes_brat, sizes_db, colors)):
-        # Angles pour le secteur principal
-        theta1 = 90+ angles[i]
-        theta2 = 90+ angles[i + 1]
-        
-        # Dessiner la superposition plus sombre pour `category_total_db` avec des hachures
-        fraction = size_db / size_brat if size_brat > 0 else 0  # Fraction pour `category_total_db`
-        if fraction > 0:
-            theta_mid = theta1 + fraction * (theta2 - theta1)  # Angle intermédiaire pour la superposition
-            plt.gca().add_patch(
-                Wedge(
-                    center=(0, 0), r=1, theta1=theta1, theta2=theta_mid,
-                    facecolor=color, edgecolor='black', linewidth=1, alpha=0.6, 
-                    hatch='//'  # Application des hachures sur la zone superposée
+        # Dessiner la superposition hachurée pour `category_total_db`
+        for i, (label, size_brat, size_db, color) in enumerate(zip(labels, sizes_brat, sizes_db, colors)):
+            # Angles pour le secteur principal
+            theta1 = 90+ angles[i]
+            theta2 = 90+ angles[i + 1]
+            
+            # Dessiner la superposition plus sombre pour `category_total_db` avec des hachures
+            fraction = size_db / size_brat if size_brat > 0 else 0  # Fraction pour `category_total_db`
+            if fraction > 0:
+                theta_mid = theta1 + fraction * (theta2 - theta1)  # Angle intermédiaire pour la superposition
+                plt.gca().add_patch(
+                    Wedge(
+                        center=(0, 0), r=1, theta1=theta1, theta2=theta_mid,
+                        facecolor=color, edgecolor='black', linewidth=1, alpha=0.6, 
+                        hatch='//'  # Application des hachures sur la zone superposée
+                    )
                 )
-            )
-    # Ajouter un cercle blanc au centre pour donner un effet de "donut"
-    centre_circle = plt.Circle((0, 0), 0.65, fc='white')
-    plt.gca().add_artist(centre_circle)
+        # Ajouter un cercle blanc au centre pour donner un effet de "donut"
+        centre_circle = plt.Circle((0, 0), 0.65, fc='white')
+        plt.gca().add_artist(centre_circle)
 
-    plt.legend(
-        wedges, legend, 
-        title="Légende", 
-        loc="center left", 
-        bbox_to_anchor=(1.05, 0.5),  # Légende positionnée à droite, centrée verticalement
-        fontsize=10
-    )       
+        plt.legend(
+            wedges, legend, 
+            title="Légende", 
+            loc="center left", 
+            bbox_to_anchor=(1.05, 0.5),  # Légende positionnée à droite, centrée verticalement
+            fontsize=10
+        )       
 
-    # Supprimer les axes x et y
-    plt.axis('off')
+        # Supprimer les axes x et y
+        plt.axis('off')
 
-    # Ajouter un titre
-    plt.title("Répartition des catégories manquantes p/r au BRAT", fontsize=18)
+        # Ajouter un titre
+        plt.title("Répartition des catégories manquantes p/r au BRAT", fontsize=18)
 
-    # Ajuster l'apparence
-    plt.tight_layout()
-    st.pyplot(fig)
+        # Ajuster l'apparence
+        plt.tight_layout()
+        st.pyplot(fig)
 
 st.write("Les \% montrent la part de la catégorie par rapport à toute les catégories relevées par le BRAT. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver")
 
