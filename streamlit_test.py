@@ -28,7 +28,7 @@ diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_ev
 st.markdown(
     """
     <h1 style='text-align: center; font-size: 36px; color: black;'>
-    SITEX2.0 - Comparaison BD et relevé du BRAT
+    SITEX2.0 - Comparaison BD et relevé du BRAT version 2
     </h1>
     """,
     unsafe_allow_html=True
