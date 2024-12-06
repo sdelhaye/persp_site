@@ -650,7 +650,7 @@ sizes_db = np.minimum(np.maximum(category_total_db.values, 0), sizes_brat)
 # Label pour chaque catégorie
 labels = grouped_df["group"]
 total = sum(sizes_brat)
-percentages = [f"{label} ({size / total * 100:.1f}%)" for label, size in zip(legend, sizes_brat)]
+percentages = [f"{label} ({size / total * 100:.1f}%)" for label, size in zip(label, sizes_brat)]
 
 # Calculer les angles pour les secteurs du diagramme
 angles = np.cumsum(sizes_brat) / np.sum(sizes_brat) * 360  # Angles cumulés
