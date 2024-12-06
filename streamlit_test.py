@@ -415,6 +415,8 @@ elif general=="La superficie plancher":
         sizes_brat = np.maximum(category_total_brat.values, 0)
         sizes_db = np.minimum(np.maximum(category_total_db.values, 0), sizes_brat)
 
+        total = sum(sizes_brat)
+        percentages = [f"{label} ({size / total * 100:.1f}%)" for label, size in zip(legend, sizes_brat)]
 
         labels = result_df[colname]
         colors = [color_dict.get(cat, '#dddddd') for cat in result_df[colname]]
@@ -477,7 +479,7 @@ elif general=="La superficie plancher":
         plt.gca().add_artist(centre_circle)
 
         plt.legend(
-            wedges, legend, 
+            wedges, percentages, 
             title="Légende", 
             loc="center left", 
             bbox_to_anchor=(1.05, 0.5),  # Légende positionnée à droite, centrée verticalement
