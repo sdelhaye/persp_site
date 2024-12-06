@@ -218,7 +218,7 @@ if general=="Le nombre d'occupation":
                 fraction = size_db / size_brat if size_brat > 0 else 0  # Fraction pour `category_total_db`
                 if fraction > 0:
                     theta_mid = theta1 + fraction * (theta2 - theta1)  # Angle intermédiaire pour la superposition
-                    if general3=="BRAT + ce que notre DB ne trouve pas"
+                    if general3=="BRAT + ce que notre DB ne trouve pas":
                         plt.gca().add_patch(
                             Wedge(
                                 center=(0, 0), r=1, theta1=theta1, theta2=theta_mid,
@@ -226,7 +226,7 @@ if general=="Le nombre d'occupation":
                                 hatch='//'  # Application des hachures sur la zone superposée
                             )
                         )
-                    elif general3=="BRAT + ce que notre DB retrouve"
+                    elif general3=="BRAT + ce que notre DB retrouve":
                         plt.gca().add_patch(
                             Wedge(
                                 center=(0, 0), r=1, theta1=theta_mid, theta2=theta2,
