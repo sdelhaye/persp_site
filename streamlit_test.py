@@ -13,6 +13,7 @@ def load_csv(filepath):
 @st.cache_data
 def load_excel(filepath, sheet_name):
     return pd.read_excel(filepath, sheet_name=sheet_name)
+
 ################   READ FILE
 code="sitex"
 sitex2_occ_block=load_csv('tables/brat_releve.csv')
@@ -24,7 +25,7 @@ diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.
 diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
 diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
 
-
+# Visualisation sur l'application
 st.markdown(
     """
     <h1 style='text-align: center; font-size: 36px; color: black;'>
@@ -465,7 +466,7 @@ elif general=="La superficie plancher":
 
 st.write("Les \% montrent la part de la catégorie par rapport à toute les catégories relevées par le BRAT. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver")
 
-############################# Par catgéorie
+############################# Par catégorie
 st.markdown(
     """
     <p style='text-align: left; font-size: 20px; color: black;'>
@@ -481,7 +482,8 @@ categ=st.radio("Quelle catégorie voulez-vous voir ?",
                 "Energie","Sport"])
 column_txt=st.radio("Voulez voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
-
+niv_txt=st.radio("Quelel la précision de la nomenclature voulez vous voir :",
+               ["Niveau 2", "Niveau 3" ])
 
 if categ == "Logement":
     nomen="01"
@@ -515,6 +517,10 @@ if column_txt=="Le nombre d'occupation":
     column="count"
 elif column_txt=="La superficie plancher":
     column="sum_area"
+if niv_txt=="Niveau 2":
+    niv=2
+elif niv_txt=="Niveau 3":
+    niv=3
 
 
 # Date de notre DB 
@@ -525,14 +531,22 @@ code="sitex"
 bur_acc=True
 
 ### Fonction pour grouper selon le niveau 2 pour au final sommer le nbre d'occupation et la superficie
-def assign_group(code):
+def assign_group(code,niveau):
     niv1 = code[:2]  # Extraire le niveau 1
-    # Boucler sur tous les sous-niveaux possibles
-    for i in range(0, 51):  # Inclut 0 à 50
-        suffix = f".{i:02}"  # Format des suffixes, ex : '.00', '.01', ..., '.50'
-        if code.startswith(niv1 + suffix):
-            return niv1 + suffix +".00.00"
-    return "others"  # Si aucune correspondance
+    niv2= code[3:5] # Extraire le niveau 2
+    if niveau==2:
+        # Boucler sur tous les sous-niveaux possibles
+        for i in range(0, 51):  # Inclut 0 à 50
+            suffix = f".{i:02}"  # Format des suffixes, ex : '.00', '.01', ..., '.50'
+            if code.startswith(niv1 + suffix):
+                return niv1 + suffix +".00.00"
+        return "others"  # Si aucune correspondance
+    elif niveau==3:
+        for i in range(0, 21):  # Inclut 0 à 02
+            suffix = f".{i:02}"  # Format des suffixes, ex : '.00', '.01', ..., '.50'
+            if code.startswith(niv1 +'.'+niv2+ suffix):
+                return niv1 + "."+ niv2 + suffix +".00"
+        return "others"  # Si aucune correspondance  
 
 #### 
 # Toutes les occup faites par le BRAT    
@@ -560,7 +574,7 @@ resultat_miss = bat_miss_occup.groupby("occupcode_").agg(
 resultat_all=pd.merge(resultat_miss,resultat,on="occupcode_",how='left')
 
 # Ajouter une colonne pour les groupes de niveau 2
-resultat_all['group'] = resultat_all['occupcode_'].apply(assign_group)
+resultat_all['group'] = resultat_all['occupcode_'].apply(lambda code: assign_group(code, niveau=niv))
 
 # Grouper par la colonne 'group' et sommer les valeurs
 grouped_df = resultat_all.groupby('group', as_index=False).agg(
@@ -571,7 +585,10 @@ grouped_df = resultat_all.groupby('group', as_index=False).agg(
 # Trouver le label de chaque catégorie
 grouped_df=pd.merge(grouped_df,code_sitex2,left_on="group",right_on="CODE",how="left")
 ############## PLOT
-
+colors = [
+    '#AFCBFF', '#FFD6A5', '#FFABAB', '#FFC3A0', '#D5AAFF',
+    '#85E3FF', '#B9FBC0', '#FFCCF9', '#DCD3FF', '#FFDFD3',
+    '#FFC09F', '#FFEE93', '#D8F8B7', '#A0CED9', '#B5EAD7']
 label=grouped_df["IntituleFr"].str[:20]
 if column=="sum_area":
     name="sp_"
@@ -608,7 +625,8 @@ wedges, texts, autotexts = plt.pie(
     startangle=90, 
     pctdistance=0.85, 
     wedgeprops={'edgecolor': 'black'},
-    textprops={'color': 'black', 'fontsize': 10}
+    textprops={'color': 'black', 'fontsize': 10},
+    colors=colors  # Palette personnalisée
 )
 
 # Personnaliser les autotextes (pourcentages au centre)
