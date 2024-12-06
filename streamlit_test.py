@@ -579,7 +579,8 @@ elif typee=="La superficie plancher":
     result_df["diff_area (%)"]=result_df["miss_area"]/result_df["area"]*100
     category_total_miss=result_df[[colname,"diff_area (%)"]]
 
-    category_total_area = category_total_miss.groupby(colname)["diff_area (%)"].sum()
+    category_total_miss = category_total_miss.groupby(colname)["diff_area (%)"].sum()
+    
 # Trier les valeurs par ordre croissant
 category_total_miss_sorted = category_total_miss.sort_values()
 # Génération des noms de catégorie à partir de nomen_to_label
