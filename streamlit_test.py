@@ -456,24 +456,33 @@ elif general=="La superficie plancher":
             0, 0, f'{int(total_lines)} m²\n relevés par le BRAT',
             horizontalalignment='center', verticalalignment='center', fontsize=16, fontweight='bold'
         )
-
-        # Dessiner la superposition hachurée pour `category_total_db`
-        for i, (label, size_brat, size_db, color) in enumerate(zip(labels, sizes_brat, sizes_db, colors)):
-            # Angles pour le secteur principal
-            theta1 = 90+ angles[i]
-            theta2 = 90+ angles[i + 1]
-            
-            # Dessiner la superposition plus sombre pour `category_total_db` avec des hachures
-            fraction = size_db / size_brat if size_brat > 0 else 0  # Fraction pour `category_total_db`
-            if fraction > 0:
-                theta_mid = theta1 + fraction * (theta2 - theta1)  # Angle intermédiaire pour la superposition
-                plt.gca().add_patch(
-                    Wedge(
-                        center=(0, 0), r=1, theta1=theta1, theta2=theta_mid,
-                        facecolor=color, edgecolor='black', linewidth=1, alpha=0.6, 
-                        hatch='//'  # Application des hachures sur la zone superposée
-                    )
-                )
+        if general3!="BRAT uniquement":
+            # Dessiner la superposition hachurée pour `category_total_db`
+            for i, (label, size_brat, size_db, color) in enumerate(zip(labels, sizes_brat, sizes_db, colors)):
+                # Angles pour le secteur principal
+                theta1 = 90+ angles[i]
+                theta2 = 90+ angles[i + 1]
+                
+                # Dessiner la superposition plus sombre pour `category_total_db` avec des hachures
+                fraction = size_db / size_brat if size_brat > 0 else 0  # Fraction pour `category_total_db`
+                if fraction > 0:
+                    theta_mid = theta1 + fraction * (theta2 - theta1)  # Angle intermédiaire pour la superposition
+                    if general3=="BRAT + ce que notre DB ne trouve pas":
+                        plt.gca().add_patch(
+                            Wedge(
+                                center=(0, 0), r=1, theta1=theta1, theta2=theta_mid,
+                                facecolor=color, edgecolor='black', linewidth=1, alpha=0.6, 
+                                hatch='//'  # Application des hachures sur la zone superposée
+                            )
+                        )
+                    elif general3=="BRAT + ce que notre DB retrouve":
+                        plt.gca().add_patch(
+                            Wedge(
+                                center=(0, 0), r=1, theta1=theta_mid, theta2=theta2,
+                                facecolor=color, edgecolor='black', linewidth=1, alpha=0.6, 
+                                hatch='o'  # Application des hachures sur la zone superposée
+                            )
+                        )                        
         # Ajouter un cercle blanc au centre pour donner un effet de "donut"
         centre_circle = plt.Circle((0, 0), 0.65, fc='white')
         plt.gca().add_artist(centre_circle)
