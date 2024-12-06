@@ -47,7 +47,8 @@ general=st.radio("Voulez-vous voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
 general2=st.radio("Quel type de graphique voulez-vous voir:",
                ["Cammembert/circulaire", "Barre/histogramme" ])
-
+general3=st.radio("Représentation des données :",
+               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas" ])
 ## Graphique de base 
 legend=["Logement","Hôtel","Bureau","Act. productives","Commerce","Ecole","Soin","Culte",
        "Transport","Ambassade","Aide à la population","Divertissement","Energie","Sport",
@@ -125,17 +126,17 @@ if general=="Le nombre d'occupation":
                 color=color_dict[col],  # Couleur
                 label=legend[i]  # Légende
             )
-
-            # Superposition des hachures pour `category_pivot_total_db`
-            ax.bar(
-                category_pivot_total_brat2.index,  # x
-                category_pivot_total_db2[col],  # y
-                bottom=(category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]
-                    + category_pivot_total_brat2[col] - category_pivot_total_db2[col]),  # Position : sommet de la barre initiale
-                facecolor="none",  # Pas de remplissage
-                edgecolor="black",  # Couleur des hachures
-                hatch="//"  # Style des hachures
-            )
+            if general3=="BRAT + ce que notre DB ne trouve pas":
+                # Superposition des hachures pour `category_pivot_total_db`
+                ax.bar(
+                    category_pivot_total_brat2.index,  # x
+                    category_pivot_total_db2[col],  # y
+                    bottom=(category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]
+                        + category_pivot_total_brat2[col] - category_pivot_total_db2[col]),  # Position : sommet de la barre initiale
+                    facecolor="none",  # Pas de remplissage
+                    edgecolor="black",  # Couleur des hachures
+                    hatch="//"  # Style des hachures
+                )
         # Ajouter des labels et un titre
         plt.xlabel("Nombre d'occupations différentes", fontsize=12)
         plt.ylabel("Nombre de bâtiments", fontsize=12)
