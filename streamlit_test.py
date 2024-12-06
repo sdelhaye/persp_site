@@ -140,9 +140,8 @@ if general=="Le nombre d'occupation":
             elif general3=="BRAT + ce que notre DB retrouve":
                 ax.bar(
                     category_pivot_total_brat2.index,  # x
-                    category_pivot_total_db2[col],  # y
-                    bottom=(category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]
-                            + category_pivot_total_brat2[col]),  # Position : sommet des barres empilées
+                    category_pivot_total_brat[col]-category_pivot_total_db2[col],  # y
+                    bottom=(category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]),  # Position : sommet des barres empilées
                     facecolor="none",  # Pas de remplissage
                     edgecolor="black",  # Couleur des hachures
                     hatch="xx"  # Nouveau style de hachures
