@@ -454,7 +454,7 @@ elif general=="La superficie plancher":
         total_lines = category_total_brat.sum()
         plt.text(
             0, 0, f'{int(total_lines)} m²\n relevés par le BRAT',
-            horizontalalignment='center', verticalalignment='center', fontsize=16, fontweight='bold'
+            horizontalalignment='center', verticalalignment='center', fontsize=14, fontweight='bold'
         )
         if general3!="BRAT uniquement":
             # Dessiner la superposition hachurée pour `category_total_db`
@@ -505,7 +505,7 @@ elif general=="La superficie plancher":
         plt.tight_layout()
         st.pyplot(fig)
 
-st.write("Les \% montrent la part de la catégorie par rapport à toute les catégories relevées par le BRAT. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver")
+st.write("Les \% montrent la part de la catégorie par rapport à toute les catégories relevées par le BRAT. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver et les cercles sont ce que notre DB arrive à retrouver")
 
 ############################# Par catégorie
 st.markdown(
