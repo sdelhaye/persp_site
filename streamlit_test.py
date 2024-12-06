@@ -525,8 +525,9 @@ column_txt=st.radio("Voulez voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
 niv_txt=st.radio("Précision de la nomenclature :",
                ["Niveau 2", "Niveau 3" ])
-layout=st.radio("Représentation des données :",
-               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
+layout=st.radio("Précision de la nomenclature :",
+               ["Niveau 2", "Niveau 3" ])
+
 if categ == "Logement":
     nomen="01"
 elif categ=="Hôtel":
@@ -711,7 +712,7 @@ if layout!="BRAT uniquement":
                     facecolor='none', 
                     edgecolor='black',
                     linewidth=1,
-                    hatch='//',
+                    hatch='o',
                     alpha=0.5
                 )                
             plt.gca().add_patch(wedge)
