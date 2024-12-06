@@ -602,8 +602,7 @@ for i, bar in enumerate(bars):
             ha='center', fontsize=10, color='black')
 
 # Ajouter des titres et labels
-plt.title('Répartition des catégories', fontsize=16)
-plt.xlabel('Catégories', fontsize=14)
+plt.title("Ce qu'il manque à notre DB poru chaque catégorie", fontsize=16)
 plt.ylabel('Part de la superficie plancher manquante (%)', fontsize=14)
 
 # Rotation des noms des catégories pour une meilleure lisibilité
