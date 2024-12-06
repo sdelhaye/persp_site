@@ -520,8 +520,8 @@ typee=st.radio("Comparaison de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher"  ])
 nomen_to_label = {"01": "Logement",    "02": "Hôtel",    "03": "Bureau",    "04": "Act. productives",
     "05": "Commerce",    "06": "Ecole",    "07": "Soin",    "08": "Culte",    "09": "Transport",
-    "10": "Ambassade",    "11": "Aide à la population",    "13": "Divertissement",    "14": "Energie",
-    "16": "Sport",    "20": "Production immatériel"
+    "10": "Ambassade",    "11": "Aide à la pop",    "13": "Divertissement",    "14": "Energie",
+    "16": "Sport",    "20": "Production imm"
 }
 
 niveau=1
