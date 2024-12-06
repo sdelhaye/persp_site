@@ -559,14 +559,13 @@ category_total_miss_sorted = category_total_miss.sort_values()
 category_labels = [nomen_to_label.get(code, f"Code inconnu ({code})") for code in category_total_miss_sorted.index]
 
 # Créer le bar plot
-fig, ax = plt.subplots(figsize=(8, 8))
+fig, ax = plt.subplots(figsize=(10, 6))
 ax = plt.gca()
 colors = [color_dict.get(cat, '#dddddd') for cat in category_total_miss_sorted.index]
 
 category_total_miss_sorted.plot(kind='bar', color=colors, edgecolor='black')
 
 # Créer le bar plot
-plt.figure(figsize=(10, 6))
 colors = [color_dict.get(cat, '#dddddd') for cat in category_total_miss_sorted.index]
 
 bars = plt.bar(category_labels, category_total_miss_sorted, color=colors, edgecolor='black')
@@ -578,8 +577,9 @@ for i, bar in enumerate(bars):
              ha='center', fontsize=10, color='black')
 
 # Ajouter des titres et labels
-plt.title("Part de ce qu'il nous manque dans chaque catégorie", fontsize=16)
-plt.ylabel('Superficie plancher manquante (%)', fontsize=14)
+plt.title('Répartition des catégories', fontsize=16)
+plt.xlabel('Catégories', fontsize=14)
+plt.ylabel('Part de la superficie plancher manquante (%)', fontsize=14)
 
 plt.xticks(rotation=90, fontsize=12)
 plt.tight_layout()
