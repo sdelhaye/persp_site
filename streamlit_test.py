@@ -172,7 +172,7 @@ if general=="Le nombre d'occupation":
         labels = category_total_brat.index
         colors = [color_dict.get(cat, '#dddddd') for cat in labels]
         total = sum(sizes_brat)
-        percentages = [f"{label} ({size / total * 100:.1f}%)" for label, size in zip(labels, sizes_brat)]
+        percentages = [f"{label} ({size / total * 100:.1f}%)" for label, size in zip(legend, sizes_brat)]
 
         # Calculer les angles pour les secteurs du diagramme
         angles = np.cumsum(sizes_brat) / np.sum(sizes_brat) * 360  # Angles cumulés
@@ -185,7 +185,7 @@ if general=="Le nombre d'occupation":
         # Créer le pie chart initial avec les pourcentages
         wedges, texts, autotexts = plt.pie(
             sizes_brat, 
-            labels=labels, 
+            labels=legend, 
             autopct='%1.1f%%',  # Pourcentages avec une décimale
             colors=colors,  # Couleurs pour chaque catégorie
             startangle=90, 
