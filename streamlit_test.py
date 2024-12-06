@@ -37,7 +37,7 @@ st.markdown(
 st.markdown(
     """
     <p style='text-align: left; font-size: 20px; color: black;'>
-    Résultats des 5318 bâtiments du relevé du BRAT (ZEMU+ZIR) avec une comparaison de ce que notre DB retrouve ou pas
+    Résultats des 5318 bâtiments du relevé du BRAT (ZEMU+ZIR) au niveau 1 de la nomenclature avec une comparaison de ce que notre DB retrouve ou pas
     </p>
     """,
     unsafe_allow_html=True
@@ -507,11 +507,89 @@ elif general=="La superficie plancher":
 
 st.write("Les \% montrent la part de la catégorie par rapport à toute les catégories relevées par le BRAT. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver et les cercles sont ce que notre DB arrive à retrouver")
 
+######### Histo de ce que notre DB retrouve par catégorie en %
+st.markdown(
+    """
+    <p style='text-align: left; font-size: 20px; color: black;'>
+    Part de ce que notre DB n'arrive pas à trouver pour chaque grande catégorie
+    </p>
+    """,
+    unsafe_allow_html=True
+)
+typee=st.radio("Voulez-vous voir la comparaison de notre DB selon :",
+               ["Le nombre d'occupation", "La superficie plancher"  ])
+nomen_to_label = {"01": "Logement",    "02": "Hôtel",    "03": "Bureau",    "04": "Act. productives",
+    "05": "Commerce",    "06": "Ecole",    "07": "Soin",    "08": "Culte",    "09": "Transport",
+    "10": "Ambassade",    "11": "Aide à la population",    "13": "Divertissement",    "14": "Energie",
+    "16": "Sport",    "20": "Production immatériel"
+}
+
+niveau=1
+sitex2_occ_block["nomen"]=sitex2_occ_block["occupcode_"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+
+if code=="pras":
+    data=data[data["regroupement_fill"].isna()==False]
+    colname="regroupement_fill"
+else:
+    colname="nomen"
+
+if typee=="Le nombre d'occupation":
+# Étape 1 : Calculer les totaux des occurrences pour chaque catégorie
+    category_total_brat = category_pivot_total_brat.sum()
+    # ce qu'il nous manque dans la DB
+    category_total_db = category_pivot_total_db.sum()
+    category_total_miss=category_total_db/category_total_brat*100
+elif typee=="La superficie plancher":
+    data=sitex2_occ_block[sitex2_occ_block["nomen"]!="15"]
+    # Groupement par la colonne "nomen" et somme des valeurs de la colonne "area"
+    result = data.groupby(colname)["area"].sum().reset_index()
+
+
+    # Ce qu'il nous manque en superficie plancher par categérie
+    miss_sp = sp_miss_tot.groupby("nomen_miss")["miss_area"].sum().reset_index()
+    # Jointure 
+    result_df=pd.merge(result,miss_sp,left_on=colname,right_on="nomen_miss")
+    result_df["diff_area (%)"]=result_df["miss_area"]/result_df["area"]*100
+    category_total_miss=result_df[[colname,"diff_area (%)"]]
+
+    category_total_area = category_total_miss.groupby(colname)["diff_area (%)"].sum()
+# Trier les valeurs par ordre croissant
+category_total_miss_sorted = category_total_miss.sort_values()
+# Mapper les noms des catégories après regroupement
+category_labels = [nomen_to_label.get(code, f"Code inconnu ({code})") for code in category_total_miss_sorted.index]
+
+# Créer le bar plot
+plt.figure(figsize=(10, 6))
+colors = [color_dict.get(cat, '#dddddd') for cat in category_total_miss_sorted.index]
+
+category_total_miss_sorted.plot(kind='bar', color=colors, edgecolor='black')
+
+# Créer le bar plot
+plt.figure(figsize=(10, 6))
+colors = [color_dict.get(cat, '#dddddd') for cat in category_total_miss_sorted.index]
+
+bars = plt.bar(category_labels, category_total_miss_sorted, color=colors, edgecolor='black')
+
+# Ajouter les valeurs sur les barres
+for i, bar in enumerate(bars):
+    height = bar.get_height()
+    plt.text(bar.get_x() + bar.get_width() / 2, height + 1, f'{height:.2f}%', 
+             ha='center', fontsize=10, color='black')
+
+# Ajouter des titres et labels
+plt.title("Part de ce qu'il nous manque dans chaque catégorie", fontsize=16)
+plt.ylabel('Superficie plancher manquante (%)', fontsize=14)
+
+plt.xticks(rotation=90, fontsize=12)
+plt.tight_layout()
+plt.show()
+
+
 ############################# Par catégorie
 st.markdown(
     """
     <p style='text-align: left; font-size: 20px; color: black;'>
-    Ce qu'il manque à notre DB comparé au relevé du BRAT au sein de chaque catégorie SITEX (niveau 2 de la nomenclature)
+    Résultat du relevé du BRAT au sein de chaque catégorie SITEX (niveau 2 ou 3 de la nomenclature)
     </p>
     """,
     unsafe_allow_html=True
