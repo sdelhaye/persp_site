@@ -229,7 +229,7 @@ if general=="Le nombre d'occupation":
         # Supprimer les axes x et y
         plt.axis('off')
 
-        plt.title("Répartition des catégories manquantes p/r à la DB", fontsize=18)
+        plt.title("Comparaison par rapport au relevé du BRAT", fontsize=18)
 
         # Ajuster l'apparence
         plt.tight_layout()
@@ -458,7 +458,7 @@ elif general=="La superficie plancher":
         plt.axis('off')
 
         # Ajouter un titre
-        plt.title("Répartition des catégories manquantes p/r au BRAT", fontsize=18)
+        plt.title("Comparaison par rapport au relevé du BRAT", fontsize=18)
 
         # Ajuster l'apparence
         plt.tight_layout()
@@ -482,7 +482,7 @@ categ=st.radio("Quelle catégorie voulez-vous voir ?",
                 "Energie","Sport"])
 column_txt=st.radio("Voulez voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
-niv_txt=st.radio("Quelel la précision de la nomenclature voulez vous voir :",
+niv_txt=st.radio("Précision de la nomenclature :",
                ["Niveau 2", "Niveau 3" ])
 
 if categ == "Logement":
@@ -585,10 +585,8 @@ grouped_df = resultat_all.groupby('group', as_index=False).agg(
 # Trouver le label de chaque catégorie
 grouped_df=pd.merge(grouped_df,code_sitex2,left_on="group",right_on="CODE",how="left")
 ############## PLOT
-colors = [
-    '#AFCBFF', '#FFD6A5', '#FFABAB', '#FFC3A0', '#D5AAFF',
-    '#85E3FF', '#B9FBC0', '#FFCCF9', '#DCD3FF', '#FFDFD3',
-    '#FFC09F', '#FFEE93', '#D8F8B7', '#A0CED9', '#B5EAD7']
+colors = ['#95add9','#b590d9', '#d9b68c', '#71c1d9', '#d99191', '#9dd5a3', '#d9a688', '#d9add4',
+        '#bbb3d9', '#b8d39c', '#d9beb3', '#88afb8', '#d9a387', '#9ac7b7', '#d9ca7d']
 label=grouped_df["IntituleFr"].str[:20]
 if column=="sum_area":
     name="sp_"
@@ -669,7 +667,7 @@ plt.gca().add_artist(centre_circle)
 plt.axis('off')
 
 # Ajouter un titre
-plt.title("Répartition des " + nomen+" p/r au BRAT", fontsize=18)
+plt.title("Répartition des " + categ+" p/r au BRAT", fontsize=18)
 
 # Ajouter une légende en dehors du graphique
 plt.legend(
