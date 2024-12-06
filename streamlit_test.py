@@ -525,6 +525,8 @@ column_txt=st.radio("Voulez voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
 niv_txt=st.radio("Précision de la nomenclature :",
                ["Niveau 2", "Niveau 3" ])
+layout=st.radio("Représentation des données :",
+               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
 
 if categ == "Logement":
     nomen="01"
@@ -679,26 +681,41 @@ plt.text(
     0, 0, f'{int(total_lines)}'+text,
     horizontalalignment='center', verticalalignment='center', fontsize=14, fontweight='bold'
 )
-# Dessiner les superpositions hachurées pour DB
-for i, (size_brat, size_db) in enumerate(zip(sizes_brat, sizes_db)):
-    if size_db > 0:
-        # Calcul des angles pour chaque superposition
-        theta1 = 90 + angles[i]
-        theta2 = 90 + angles[i] + (size_db / size_brat) * (angles[i + 1] - angles[i])
-        
-        # Ajouter la superposition hachurée
-        wedge = Wedge(
-            center=(0, 0),
-            r=1,  # Rayon externe
-            theta1=theta1,
-            theta2=theta2,
-            facecolor='none', 
-            edgecolor='black',
-            linewidth=1,
-            hatch='//',
-            alpha=0.5
-        )
-        plt.gca().add_patch(wedge)
+if layout!="BRAT uniquement":
+    # Dessiner les superpositions hachurées pour DB
+    for i, (size_brat, size_db) in enumerate(zip(sizes_brat, sizes_db)):
+        if size_db > 0:
+            # Calcul des angles pour chaque superposition
+            theta1 = 90 + angles[i]
+            theta2 = 90 + angles[i] + (size_db / size_brat) * (angles[i + 1] - angles[i])
+            theta3= 90 + angles[i] + (angles[i + 1] - angles[i])
+            if layout=="BRAT + ce que notre DB ne trouve pas":
+                # Ajouter la superposition hachurée
+                wedge = Wedge(
+                    center=(0, 0),
+                    r=1,  # Rayon externe
+                    theta1=theta1,
+                    theta2=theta2,
+                    facecolor='none', 
+                    edgecolor='black',
+                    linewidth=1,
+                    hatch='//',
+                    alpha=0.5
+                )
+            elif layout=="BRAT + ce que notre DB retrouve":
+                # Ajouter la superposition hachurée
+                wedge = Wedge(
+                    center=(0, 0),
+                    r=1,  # Rayon externe
+                    theta1=theta2,
+                    theta2=theta3,
+                    facecolor='none', 
+                    edgecolor='black',
+                    linewidth=1,
+                    hatch='//',
+                    alpha=0.5
+                )                
+            plt.gca().add_patch(wedge)
 
 # Ajouter un cercle blanc pour l'effet "donut"
 centre_circle = plt.Circle((0, 0), 0.65, fc='white')
@@ -708,7 +725,7 @@ plt.gca().add_artist(centre_circle)
 plt.axis('off')
 
 # Ajouter un titre
-plt.title("Répartition des " + categ+" p/r au BRAT", fontsize=18)
+plt.title("Répartition des " + categ+"s p/r au BRAT", fontsize=18)
 
 # Ajouter une légende en dehors du graphique
 plt.legend(
