@@ -188,7 +188,6 @@ if general=="Le nombre d'occupation":
             labels=labels, 
             colors=colors,  # Couleurs pour chaque catégorie
             startangle=90, 
-            pctdistance=0.85,  # Position des pourcentages par rapport au centre
             wedgeprops={'edgecolor': 'black'},  # Bordure noire pour chaque secteur
             textprops={'color': 'black', 'fontsize': 10}  # Couleur et taille du texte des labels
         )
