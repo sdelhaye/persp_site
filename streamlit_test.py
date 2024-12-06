@@ -183,15 +183,21 @@ if general=="Le nombre d'occupation":
         fig, ax = plt.subplots(figsize=(8, 8))
 
         # Créer le pie chart initial avec les pourcentages
-        wedges, texts = plt.pie(
+        wedges, texts, autotexts = plt.pie(
             sizes_brat, 
             labels=labels, 
+            autopct='%1.1f%%',  # Pourcentages avec une décimale
             colors=colors,  # Couleurs pour chaque catégorie
             startangle=90, 
+            pctdistance=0.85,  # Position des pourcentages par rapport au centre
             wedgeprops={'edgecolor': 'black'},  # Bordure noire pour chaque secteur
             textprops={'color': 'black', 'fontsize': 10}  # Couleur et taille du texte des labels
         )
 
+        # # Personnaliser les autotextes (les pourcentages) pour qu'ils apparaissent au centre
+        # for autotext in autotexts:
+        #     autotext.set_fontsize(12)
+        #     autotext.set_fontweight('bold')
 
         # Ajouter un cercle blanc au centre pour donner un effet de "donut"
         centre_circle = plt.Circle((0, 0), 0.65, fc='white')
