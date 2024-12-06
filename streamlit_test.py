@@ -582,33 +582,31 @@ elif typee=="La superficie plancher":
     category_total_area = category_total_miss.groupby(colname)["diff_area (%)"].sum()
 # Trier les valeurs par ordre croissant
 category_total_miss_sorted = category_total_miss.sort_values()
-# Mapper les noms des catégories après regroupement
+# Génération des noms de catégorie à partir de nomen_to_label
 category_labels = [nomen_to_label.get(code, f"Code inconnu ({code})") for code in category_total_miss_sorted.index]
 
-# Créer le bar plot
+# Créer le graphique (bar plot)
 fig, ax = plt.subplots(figsize=(10, 6))
-ax = plt.gca()
-colors = [color_dict.get(cat, '#dddddd') for cat in category_total_miss_sorted.index]
 
-category_total_miss_sorted.plot(kind='bar', color=colors, edgecolor='black')
+# Génération des couleurs
+colors = [color_dict.get(code, '#dddddd') for code in category_total_miss_sorted.index]
 
-# Créer le bar plot
-colors = [color_dict.get(cat, '#dddddd') for cat in category_total_miss_sorted.index]
+# Dessin des barres
+bars = ax.bar(category_labels, category_total_miss_sorted, color=colors, edgecolor='black')
 
-bars = plt.bar(category_labels, category_total_miss_sorted, color=colors, edgecolor='black')
-
-# Ajouter les valeurs sur les barres
+# Ajouter les valeurs sur chaque barre
 for i, bar in enumerate(bars):
     height = bar.get_height()
-    plt.text(bar.get_x() + bar.get_width() / 2, height + 1, f'{height:.2f}%', 
-             ha='center', fontsize=10, color='black')
+    ax.text(bar.get_x() + bar.get_width() / 2, height + 1, f'{height:.2f}%', 
+            ha='center', fontsize=10, color='black')
 
 # Ajouter des titres et labels
 plt.title('Répartition des catégories', fontsize=16)
 plt.xlabel('Catégories', fontsize=14)
 plt.ylabel('Part de la superficie plancher manquante (%)', fontsize=14)
 
-plt.xticks(rotation=90, fontsize=12)
+# Rotation des noms des catégories pour une meilleure lisibilité
+plt.xticks(rotation=45, fontsize=12)
 plt.tight_layout()
 st.pyplot(fig)
 
