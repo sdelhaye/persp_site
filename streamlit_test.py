@@ -144,7 +144,7 @@ if general=="Le nombre d'occupation":
                     bottom=(category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]),  # Position : sommet des barres empilées
                     facecolor="none",  # Pas de remplissage
                     edgecolor="black",  # Couleur des hachures
-                    hatch="+"  # Nouveau style de hachures
+                    hatch="o"  # Nouveau style de hachures
                 )
         # Ajouter des labels et un titre
         plt.xlabel("Nombre d'occupations différentes", fontsize=12)
