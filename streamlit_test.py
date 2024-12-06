@@ -534,7 +534,34 @@ else:
     colname="nomen"
 
 if typee=="Le nombre d'occupation":
-# Étape 1 : Calculer les totaux des occurrences pour chaque catégorie
+    data=diff_occ_fin
+
+    # Créer un DataFrame vide pour stocker les résultats cumulés
+    category_pivot_total_brat = pd.DataFrame()
+    category_pivot_total_db = pd.DataFrame()
+    # Boucle sur les bâtiment avecs de 1 à max occupations diff
+    for number in range(1, max(data["len_occ_brat"])+1):  
+        
+        # Filtrer les lignes où miss_db == number
+        df_filtered = data[data["len_occ_brat"] == number]
+        
+        # Exploser les listes dans 'nomen_brat' pour chaque occupation
+        df_exploded = df_filtered.explode("nomen_brat")
+        df_exploded_db = df_filtered.explode("miss_nomen_db")
+
+        # Créer un tableau croisé dynamique pour compter les occurrences de chaque catégorie par miss_db
+        category_pivot = pd.crosstab(df_exploded["len_occ_brat"], df_exploded["nomen_brat"])
+        category_pivot_db = pd.crosstab(df_exploded_db["len_occ_brat"], df_exploded_db["miss_nomen_db"])
+        
+        # Ajouter les résultats de chaque catégorie à notre DataFrame total
+        category_pivot_total_brat = pd.concat([category_pivot_total_brat, category_pivot], axis=0)
+        category_pivot_total_db = pd.concat([category_pivot_total_db, category_pivot_db], axis=0)
+
+    # Remplir les valeurs manquantes (NaN) avec des zéros
+    category_pivot_total_brat = category_pivot_total_brat.fillna(0) # Contient le nbre d'occup du brat par bâtiment selon le nbre d'occupation différente
+    category_pivot_total_db = category_pivot_total_db.fillna(0) # Contient le nbre d'occup manquantes de notre db par bâtiment selon le nbre d'occupation différente
+
+    # Étape 1 : Calculer les totaux des occurrences pour chaque catégorie
     category_total_brat = category_pivot_total_brat.sum()
     # ce qu'il nous manque dans la DB
     category_total_db = category_pivot_total_db.sum()
