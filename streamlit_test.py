@@ -649,6 +649,8 @@ sizes_db = np.minimum(np.maximum(category_total_db.values, 0), sizes_brat)
 
 # Label pour chaque catégorie
 labels = grouped_df["group"]
+total = sum(sizes_brat)
+percentages = [f"{label} ({size / total * 100:.1f}%)" for label, size in zip(legend, sizes_brat)]
 
 # Calculer les angles pour les secteurs du diagramme
 angles = np.cumsum(sizes_brat) / np.sum(sizes_brat) * 360  # Angles cumulés
@@ -672,7 +674,7 @@ wedges, texts, autotexts = plt.pie(
 
 # Personnaliser les autotextes (pourcentages au centre)
 for autotext in autotexts:
-    autotext.set_fontsize(12)
+    autotext.set_fontsize(10)
     autotext.set_fontweight('bold')
 
 # Ajouter le total d'occupations au centre
@@ -729,7 +731,7 @@ plt.title("Répartition des " + categ+"s p/r au BRAT", fontsize=18)
 
 # Ajouter une légende en dehors du graphique
 plt.legend(
-    wedges, label, 
+    wedges, percentages, 
     title="Légende", 
     loc="center left", 
     bbox_to_anchor=(1.05, 0.5),  # Légende positionnée à droite, centrée verticalement
@@ -740,4 +742,4 @@ plt.tight_layout()
 # Afficher le graphique dans Streamlit
 st.pyplot(fig)
 
-st.write("Les \% montrent la part de la catégorie spécifique par rapport à toute la catégorie relevé par le BRAT. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver")
+st.write("Les \% montrent la part de la catégorie par rapport à toute les catégories relevées par le BRAT. Le hachuré montre la part de ce que notre DB n'arrive pas à retrouver et les cercles sont ce que notre DB arrive à retrouver")
