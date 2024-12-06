@@ -727,7 +727,7 @@ plt.gca().add_artist(centre_circle)
 plt.axis('off')
 
 # Ajouter un titre
-plt.title("Relevé du BRAT pour " + categ+"s", fontsize=18)
+plt.title("Relevé du BRAT pour la catégorie " + categ, fontsize=18)
 
 # Ajouter une légende en dehors du graphique
 plt.legend(
