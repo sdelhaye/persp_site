@@ -521,13 +521,12 @@ categ=st.radio("Quelle catégorie voulez-vous voir ?",
                ["Logement", "Hôtel", "Bureau","Industrie","Commerce","Ecole","Soin",
                 "Culte","Transport","Ambassade","Aide à la pop","Divertissement",
                 "Energie","Sport"])
-layout=st.radio("Représentation des données  :",
-               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
-
 column_txt=st.radio("Voulez voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
 niv_txt=st.radio("Précision de la nomenclature :",
                ["Niveau 2", "Niveau 3" ])
+layout=st.radio("Représentation des données  :",
+               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
 
 if categ == "Logement":
     nomen="01"
