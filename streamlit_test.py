@@ -185,7 +185,7 @@ if general=="Le nombre d'occupation":
         # Créer le pie chart initial avec les pourcentages
         wedges, texts, autotexts = plt.pie(
             sizes_brat, 
-            labels=legend, 
+            labels=labels, 
             autopct='%1.1f%%',  # Pourcentages avec une décimale
             colors=colors,  # Couleurs pour chaque catégorie
             startangle=90, 
@@ -241,7 +241,7 @@ if general=="Le nombre d'occupation":
         plt.gca().add_artist(centre_circle)
         # Ajouter une légende en dehors du graphique
         plt.legend(
-            wedges, legend, 
+            wedges, percentages, 
             title="Légende", 
             loc="center left", 
             bbox_to_anchor=(1.05, 0.5),  # Légende positionnée à droite, centrée verticalement
