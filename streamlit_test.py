@@ -516,7 +516,7 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-typee=st.radio("Voulez-vous voir la comparaison de notre DB selon :",
+typee=st.radio("Comparaison de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher"  ])
 nomen_to_label = {"01": "Logement",    "02": "Hôtel",    "03": "Bureau",    "04": "Act. productives",
     "05": "Commerce",    "06": "Ecole",    "07": "Soin",    "08": "Culte",    "09": "Transport",
