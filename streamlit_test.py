@@ -48,7 +48,7 @@ general=st.radio("Voulez-vous voir le manque de notre DB selon :",
 general2=st.radio("Quel type de graphique voulez-vous voir:",
                ["Cammembert/circulaire", "Barre/histogramme" ])
 general3=st.radio("Représentation des données :",
-               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas" ])
+               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
 ## Graphique de base 
 legend=["Logement","Hôtel","Bureau","Act. productives","Commerce","Ecole","Soin","Culte",
        "Transport","Ambassade","Aide à la population","Divertissement","Energie","Sport",
@@ -136,6 +136,16 @@ if general=="Le nombre d'occupation":
                     facecolor="none",  # Pas de remplissage
                     edgecolor="black",  # Couleur des hachures
                     hatch="//"  # Style des hachures
+                )
+            elif general3=="BRAT + ce que notre DB retrouve":
+                ax.bar(
+                    category_pivot_total_brat2.index,  # x
+                    category_pivot_total_db2[col],  # y
+                    bottom=(category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]
+                            + category_pivot_total_brat2[col]),  # Position : sommet des barres empilées
+                    facecolor="none",  # Pas de remplissage
+                    edgecolor="black",  # Couleur des hachures
+                    hatch="xx"  # Nouveau style de hachures
                 )
         # Ajouter des labels et un titre
         plt.xlabel("Nombre d'occupations différentes", fontsize=12)
