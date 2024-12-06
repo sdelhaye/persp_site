@@ -51,7 +51,7 @@ general3=st.radio("Représentation des données :",
                ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
 ## Graphique de base 
 legend=["Logement","Hôtel","Bureau","Act. productives","Commerce","Ecole","Soin","Culte",
-       "Transport","Ambassade","Aide à la population","Divertissement","Energie","Sport",
+       "Transport","Ambassade","Aide à la pop","Divertissement","Energie","Sport",
        "Production immatériel"]
 if general=="Le nombre d'occupation":
     # Créer un DataFrame vide pour stocker les résultats cumulés
