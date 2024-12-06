@@ -525,8 +525,8 @@ column_txt=st.radio("Voulez voir le manque de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
 niv_txt=st.radio("Précision de la nomenclature :",
                ["Niveau 2", "Niveau 3" ])
-layout2=st.radio("Représentation des données :",
-               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
+#layout2=st.radio("Représentation des données :",
+#               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
 if categ == "Logement":
     nomen="01"
 elif categ=="Hôtel":
