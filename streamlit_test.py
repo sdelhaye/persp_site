@@ -521,7 +521,7 @@ categ=st.radio("Quelle catégorie voulez-vous voir ?",
                ["Logement", "Hôtel", "Bureau","Industrie","Commerce","Ecole","Soin",
                 "Culte","Transport","Ambassade","Aide à la pop","Divertissement",
                 "Energie","Sport"])
-layout=st.radio("Représentation des données :",
+layout=st.radio("Représentation des données  :",
                ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
 
 column_txt=st.radio("Voulez voir le manque de notre DB selon :",
