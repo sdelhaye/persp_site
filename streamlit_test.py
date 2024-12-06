@@ -150,7 +150,7 @@ if general=="Le nombre d'occupation":
         plt.xlabel("Nombre d'occupations différentes", fontsize=12)
         plt.ylabel("Nombre de bâtiments", fontsize=12)
 
-        plt.title('Comparaison par rapport au relevé du BRAT', fontsize=14)
+        plt.title('Relevé du BRAT', fontsize=14)
 
         # Ajouter une légende
         ax.legend(title="Catégories", bbox_to_anchor=(1.05, 1), loc="upper left")
@@ -250,7 +250,7 @@ if general=="Le nombre d'occupation":
         # Supprimer les axes x et y
         plt.axis('off')
 
-        plt.title("Comparaison par rapport au relevé du BRAT", fontsize=18)
+        plt.title("Relevé du BRAT", fontsize=18)
 
         # Ajuster l'apparence
         plt.tight_layout()
@@ -397,7 +397,7 @@ elif general=="La superficie plancher":
         plt.xlabel("Nombre d'occupations différentes", fontsize=12)
         plt.ylabel("Superficie plancher (m²)", fontsize=12)
 
-        plt.title('Comparaison par rapport au relevé du BRAT', fontsize=14)
+        plt.title('Relevé du BRAT', fontsize=14)
 
         # Ajouter une légende
         ax.legend(title="Catégories", bbox_to_anchor=(1.05, 1), loc="upper left")
@@ -499,7 +499,7 @@ elif general=="La superficie plancher":
         plt.axis('off')
 
         # Ajouter un titre
-        plt.title("Comparaison par rapport au relevé du BRAT", fontsize=18)
+        plt.title("Relevé du BRAT", fontsize=18)
 
         # Ajuster l'apparence
         plt.tight_layout()
@@ -727,7 +727,7 @@ plt.gca().add_artist(centre_circle)
 plt.axis('off')
 
 # Ajouter un titre
-plt.title("Répartition des " + categ+"s p/r au BRAT", fontsize=18)
+plt.title("Relevé du BRAT pour " + categ+"s", fontsize=18)
 
 # Ajouter une légende en dehors du graphique
 plt.legend(
