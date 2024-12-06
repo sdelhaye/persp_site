@@ -144,7 +144,7 @@ if general=="Le nombre d'occupation":
                     bottom=(category_pivot_total_brat2.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]),  # Position : sommet des barres empilées
                     facecolor="none",  # Pas de remplissage
                     edgecolor="black",  # Couleur des hachures
-                    hatch="xx"  # Nouveau style de hachures
+                    hatch="+"  # Nouveau style de hachures
                 )
         # Ajouter des labels et un titre
         plt.xlabel("Nombre d'occupations différentes", fontsize=12)
@@ -362,17 +362,26 @@ elif general=="La superficie plancher":
                 color=color_dict[col],  # Couleur
                 label=legend[i]  # Légende
             )
-
-            # Superposition des hachures pour `category_pivot_total_db`
-            ax.bar(
-                pivot_table_all.index,  # x
-                pivot_table[col],  # y
-                bottom=(pivot_table_all.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]
-                    + pivot_table_all[col] - pivot_table[col]),  # Position : sommet de la barre initiale
-                facecolor="none",  # Pas de remplissage
-                edgecolor="black",  # Couleur des hachures
-                hatch="//"  # Style des hachures
-            )
+            if general3=="BRAT + ce que notre DB ne trouve pas":
+                # Superposition des hachures pour `category_pivot_total_db`
+                ax.bar(
+                    pivot_table_all.index,  # x
+                    pivot_table[col],  # y
+                    bottom=(pivot_table_all.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]
+                        + pivot_table_all[col] - pivot_table[col]),  # Position : sommet de la barre initiale
+                    facecolor="none",  # Pas de remplissage
+                    edgecolor="black",  # Couleur des hachures
+                    hatch="//"  # Style des hachures
+                )
+            elif general3=="BRAT + ce que notre DB retrouve":
+                ax.bar(
+                    pivot_table_all.index,  # x
+                    pivot_table_all[col]-pivot_table[col],  # y
+                    bottom=(pivot_table_all.loc[:, :col].cumsum(axis=1).shift(1, axis=1).fillna(0)[col]),  # Position : sommet des barres empilées
+                    facecolor="none",  # Pas de remplissage
+                    edgecolor="black",  # Couleur des hachures
+                    hatch="xx"  # Nouveau style de hachures
+                )
         # Ajouter des labels et un titre
         plt.xlabel("Nombre d'occupations différentes", fontsize=12)
         plt.ylabel("Superficie plancher (m²)", fontsize=12)
