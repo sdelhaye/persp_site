@@ -29,7 +29,7 @@ diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_ev
 st.markdown(
     """
     <h1 style='text-align: center; font-size: 36px; color: black;'>
-    SITEX2.0 - Comparaison BD et relevé du BRAT version 2
+    SITEX2.0 - Comparaison BD et relevé du BRAT 
     </h1>
     """,
     unsafe_allow_html=True
@@ -37,13 +37,13 @@ st.markdown(
 st.markdown(
     """
     <p style='text-align: left; font-size: 20px; color: black;'>
-    Ce qu'il nous manque à notre DB comparé au relevé du BRAT selon les catégories SITEX
+    Résultats des 5318 bâtiments du relevé du BRAT (ZEMU+ZIR) avec une comparaison de ce que notre DB retrouve ou pas
     </p>
     """,
     unsafe_allow_html=True
 )
 
-general=st.radio("Voulez-vous voir le manque de notre DB selon :",
+general=st.radio("Voulez-vous voir la comparaison de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
 general2=st.radio("Quel type de graphique voulez-vous voir:",
                ["Cammembert/circulaire", "Barre/histogramme" ])
