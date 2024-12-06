@@ -171,6 +171,8 @@ if general=="Le nombre d'occupation":
         # Couleurs pour chaque catégorie
         labels = category_total_brat.index
         colors = [color_dict.get(cat, '#dddddd') for cat in labels]
+        total = sum(sizes_brat)
+        percentages = [f"{label} ({size / total * 100:.1f}%)" for label, size in zip(labels, sizes_brat)]
 
         # Calculer les angles pour les secteurs du diagramme
         angles = np.cumsum(sizes_brat) / np.sum(sizes_brat) * 360  # Angles cumulés
