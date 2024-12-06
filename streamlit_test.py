@@ -559,7 +559,8 @@ category_total_miss_sorted = category_total_miss.sort_values()
 category_labels = [nomen_to_label.get(code, f"Code inconnu ({code})") for code in category_total_miss_sorted.index]
 
 # Créer le bar plot
-plt.figure(figsize=(10, 6))
+fig, ax = plt.subplots(figsize=(8, 8))
+ax = plt.gca()
 colors = [color_dict.get(cat, '#dddddd') for cat in category_total_miss_sorted.index]
 
 category_total_miss_sorted.plot(kind='bar', color=colors, edgecolor='black')
@@ -582,8 +583,7 @@ plt.ylabel('Superficie plancher manquante (%)', fontsize=14)
 
 plt.xticks(rotation=90, fontsize=12)
 plt.tight_layout()
-plt.show()
-
+st.pyplot(fig)
 
 ############################# Par catégorie
 st.markdown(
