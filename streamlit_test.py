@@ -231,7 +231,7 @@ if general=="Le nombre d'occupation":
                             Wedge(
                                 center=(0, 0), r=1, theta1=theta_mid, theta2=theta2,
                                 facecolor=color, edgecolor='black', linewidth=1, alpha=0.6, 
-                                hatch='//'  # Application des hachures sur la zone superposée
+                                hatch='o'  # Application des hachures sur la zone superposée
                             )
                         )        
         # Ajouter un cercle blanc au centre pour donner un effet de "donut"
