@@ -192,10 +192,10 @@ if general=="Le nombre d'occupation":
             textprops={'color': 'black', 'fontsize': 10}  # Couleur et taille du texte des labels
         )
 
-        # Personnaliser les autotextes (les pourcentages) pour qu'ils apparaissent au centre
-        for autotext in autotexts:
-            autotext.set_fontsize(12)
-            autotext.set_fontweight('bold')
+        # # Personnaliser les autotextes (les pourcentages) pour qu'ils apparaissent au centre
+        # for autotext in autotexts:
+        #     autotext.set_fontsize(12)
+        #     autotext.set_fontweight('bold')
 
         # Ajouter un cercle blanc au centre pour donner un effet de "donut"
         centre_circle = plt.Circle((0, 0), 0.65, fc='white')
