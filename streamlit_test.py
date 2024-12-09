@@ -611,6 +611,8 @@ plt.xticks(rotation=45, fontsize=12)
 plt.tight_layout()
 st.pyplot(fig)
 
+st.write("Ces chiffres sont simplement un rapport entre ce que notre DB arrive à trouver et ce que le total de ce que le BRAT à trouver. Sur le diagramme circulaire, c'est le hachuré divisé sur toute la couleur.")
+
 ############################# Par catégorie
 st.markdown(
     """
