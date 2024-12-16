@@ -16,10 +16,11 @@ def load_excel(filepath, sheet_name):
 
 ################   READ FILE
 code="sitex"
+datum="2024_12_16"
 sitex2_occ_block=load_csv('tables/brat_releve.csv')
-sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+'.csv')
+sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
 sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
-diff_occ_fin=load_csv('tables/diff_releve_db'+code+'.csv')
+diff_occ_fin=load_csv('tables/diff_releve_db'+code+"_"+datum+'.csv')
 # Transform string column into a list columnt
 diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
 diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
