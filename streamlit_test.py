@@ -6,7 +6,7 @@ import matplotlib.pyplot as plt
 import ast
 #%%
 
-@st.cache_data
+
 def load_csv(filepath):
     return pd.read_csv(filepath, sep=";")
 
