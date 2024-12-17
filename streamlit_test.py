@@ -14,18 +14,6 @@ def load_csv(filepath):
 def load_excel(filepath, sheet_name):
     return pd.read_excel(filepath, sheet_name=sheet_name)
 
-################   READ FILE
-code="sitex"
-datum="2024_10_23"
-sitex2_occ_block=load_csv('tables/brat_releve.csv')
-sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
-sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
-diff_occ_fin=load_csv('tables/diff_releve_db'+code+"_"+datum+'.csv')
-# Transform string column into a list columnt
-diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
-diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
-diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
-
 # Visualisation sur l'application
 st.markdown(
     """
@@ -43,6 +31,33 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+date = st.select_slider(
+    "Select a date of our DB state",
+    options=[
+        "23/10/24",
+        "16/12/24"
+    ],
+)
+st.write("My date for our DB is", date)
+
+if date=="23/10/24":
+    datum="2024_10_23"
+elif date=="16/12/24":
+    datum="2024_12_16"
+
+################   READ FILE
+code="sitex"
+datum="2024_10_23"
+sitex2_occ_block=load_csv('tables/brat_releve.csv')
+sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
+sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
+diff_occ_fin=load_csv('tables/diff_releve_db'+code+"_"+datum+'.csv')
+# Transform string column into a list columnt
+diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
+diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
+diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
+
 
 general=st.radio("Voulez-vous voir la comparaison de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
