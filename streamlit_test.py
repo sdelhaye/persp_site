@@ -48,7 +48,6 @@ elif date=="16/12/24":
 
 ################   READ FILE
 code="sitex"
-datum="2024_10_23"
 sitex2_occ_block=load_csv('tables/brat_releve.csv')
 sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
 sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
