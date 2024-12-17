@@ -33,7 +33,7 @@ st.markdown(
 )
 
 date = st.select_slider(
-    "Select a date of our DB state",
+    "Select a date of the state of our DB",
     options=[
         "23/10/24",
         "16/12/24"
@@ -48,7 +48,7 @@ elif date=="16/12/24":
 
 ################   READ FILE
 code="sitex"
-sitex2_occ_block=load_csv('tables/brat_releve.csv')
+sitex2_occ_block=load_csv('tables/brat_releve_'+datum+'.csv')
 sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
 sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
 diff_occ_fin=load_csv('tables/diff_releve_db'+code+"_"+datum+'.csv')
