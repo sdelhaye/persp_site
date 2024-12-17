@@ -57,7 +57,7 @@ diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.
 diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
 diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
 
-st.write("The date for our DB state is", sitex2_occ_block[sitex2_occ_block["id_bat"]==diff_occ_fin.iloc[0][0]].iloc[0,0])
+st.write("Test ", str(sitex2_occ_block[sitex2_occ_block["id_bat"]==diff_occ_fin.iloc[0,0]].iloc[0,0]))
 
 
 general=st.radio("Voulez-vous voir la comparaison de notre DB selon :",
