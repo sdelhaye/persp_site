@@ -39,7 +39,7 @@ date = st.select_slider(
         "16/12/24"
     ],
 )
-st.write("My date for our DB is", date)
+st.write("The date for our DB state is", date)
 
 if date=="23/10/24":
     datum="2024_10_23"
