@@ -371,9 +371,9 @@ elif general=="La superficie plancher":
     else:
         colname="nomen"
     
-    data=data[~data['occupcode_'].str.startswith('15')]
+    data=data[~data['occupcode_id'].str.startswith('15')]
     niveau=1
-    data["nomen"]=data["occupcode_"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+    data["nomen"]=data["occupcode_id"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
 
     # Groupement par la colonne "nomen" et somme des valeurs de la colonne "area"
     result = data.groupby(colname)["area"].sum().reset_index()
