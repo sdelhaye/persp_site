@@ -26,7 +26,7 @@ st.markdown(
 st.markdown(
     """
     <p style='text-align: left; font-size: 20px; color: black;'>
-    Résultats des 5318 bâtiments du relevé du BRAT (ZEMU+ZIR) au niveau 1 de la nomenclature avec une comparaison de ce que notre DB retrouve ou pas
+    Résultats des 5318 bâtiments du relevé du BRAT (ZEMU + ZIR) au niveau 1 de la nomenclature avec une comparaison de ce que notre DB retrouve ou pas
     </p>
     """,
     unsafe_allow_html=True
