@@ -615,7 +615,7 @@ nomen_to_label = {"01": "Logement",    "02": "Hôtel",    "03": "Bureau",    "04
 }
 
 niveau=1
-sitex2_occ_block["nomen"]=sitex2_occ_block["occupcode_"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+sitex2_occ_block["nomen"]=sitex2_occ_block["occupcode_id"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
 
 if code=="pras":
     data=data[data["regroupement_fill"].isna()==False]
