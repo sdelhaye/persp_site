@@ -56,10 +56,8 @@ code="sitex"
 # diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
 # diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
 # diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
-database=load_csv(r'\\bruplan.local\FS\Interdep\GIS\SITEX\WIP\ANALYSE_DB\shp\occup_db_releve.csv')
-releve=load_csv(r'\\bruplan.local\FS\Interdep\GIS\SITEX\WIP\ANALYSE_DB\shp\brat_releve.csv')
 
-#database=load_csv('tables/occup_db_releve.csv')
+database=load_csv('tables/occup_db_releve.csv')
 releve=load_csv('tables/brat_releve.csv')
 if code =="sitex":
     colname="nomen"
