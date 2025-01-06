@@ -48,14 +48,88 @@ elif date=="16/12/24":
 
 ################   READ FILE
 code="sitex"
-sitex2_occ_block=load_csv('tables/brat_releve_'+datum+'.csv')
-sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
-sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
-diff_occ_fin=load_csv('tables/diff_releve_db'+code+"_"+datum+'.csv')
-# Transform string column into a list columnt
-diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
-diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
-diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
+# sitex2_occ_block=load_csv('tables/brat_releve_'+datum+'.csv')
+# sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
+# sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
+# diff_occ_fin=load_csv('tables/diff_releve_db'+code+"_"+datum+'.csv')
+# # Transform string column into a list columnt
+# diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
+# diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
+# diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
+
+database=load_csv('tables/occup_db_releve.csv')
+releve=load_csv('tables/brat_releve.csv')
+if code =="sitex":
+    colname="nomen"
+elif code=="pras":
+    colname="regroupement_fill"
+#Voir chaque bâtiment présent et comparer les résultats au n niveau de nomenclature
+niveau=1
+# Mise en niveau nomenclature, si NaN => laisse le NaN
+database["nomen"] = database["nomenclature"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+releve["nomen"] = releve["occupcode_"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+
+# Liste pour stocker les résultats
+resultats = []
+sp_miss_tot = pd.DataFrame(columns=["id_bat", "nomen_miss", "miss_area"])
+
+for id_batiment in np.unique(releve["id_bat"]):
+    occup_db=database[database["id_bat"]==id_batiment]
+    occup_brat=releve[releve["id_bat"]==id_batiment]
+
+    # Filtrer les valeurs "15"==Activité inconnue dans occup_brat
+    occup_brat = occup_brat[occup_brat["nomen"] != "15"]    
+    
+    nomen_db=set(occup_db[colname].dropna().unique())
+    nomen_brat=set(occup_brat[colname].dropna().unique())
+
+    # Trouver les valeurs manquantes dans la DB (présentes dans BRAT mais pas dans DB)
+    nomenclatures_manquantes_db = nomen_brat - nomen_db
+
+    # Trouver les valeurs manquantes dans BRAT (présentes dans DB mais pas dans BRAT)
+    nomenclatures_manquantes_brat = nomen_db - nomen_brat
+    # Ajoute les date de la DB
+    date_in=occup_db["date_insert"]
+    # Nomenclature différente max
+    max_nomenclatures_diff = max(len(nomen_db), len(nomen_brat))
+    area_miss_tot=0
+    for nomen_miss in nomenclatures_manquantes_db:  
+        area_miss=np.sum(occup_brat[occup_brat[colname]==nomen_miss]["area"])
+        area_miss_tot=area_miss_tot+area_miss
+        # Créer un DataFrame temporaire pour concaténer
+        temp_df = pd.DataFrame({
+            "id_bat": [id_batiment],
+            "nomen_miss": [nomen_miss],
+            "miss_area": [area_miss]
+        })
+
+        # Utiliser pd.concat() pour ajouter la nouvelle ligne à sp_miss_tot
+        sp_miss_tot = pd.concat([sp_miss_tot, temp_df], ignore_index=True)
+    # Stocker les résultats sous forme de dictionnaire
+    resultats.append({
+        'id_bat': id_batiment,
+        'len_occ_brat':len(nomen_brat),
+        'len_occ_db':len(nomen_db),
+        'miss_db': len(nomenclatures_manquantes_db),
+        'miss_brat': len(nomenclatures_manquantes_brat),
+        'miss_all' : len(nomenclatures_manquantes_brat)+len(nomenclatures_manquantes_db),
+        'max_nomen': max_nomenclatures_diff,  # Max de nomenclatures 
+        'miss_nomen_db': list(nomenclatures_manquantes_db),  # Ajout de la liste des valeurs manquantes
+        'miss_area':area_miss_tot,
+        'miss_nomen_brat': list(nomenclatures_manquantes_brat),
+        'nomen_brat': list(nomen_brat),
+        'nomen_db': list(nomen_db),
+    })
+
+# Créer le DataFrame à partir de la liste de résultats
+diff_occ = pd.DataFrame(resultats)
+
+# merge geom
+# Groupement par id_bat pour obtenir une seule valeur de geometry par id_bat
+# On peut utiliser `first`, `last`, ou une autre méthode d'agrégation
+releve_unique = releve.groupby('id_bat', as_index=False).first()
+diff_occ_fin=pd.merge(diff_occ,releve_unique[["id_bat","geometry"]],on="id_bat",how="left")
+
 
 
 general=st.radio("Voulez-vous voir la comparaison de notre DB selon :",
