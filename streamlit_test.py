@@ -59,6 +59,7 @@ code="sitex"
 
 database=load_csv('tables/occup_db_releve.csv')
 releve=load_csv('tables/brat_releve.csv')
+sitex2_occ_block=releve
 if code =="sitex":
     colname="nomen"
 elif code=="pras":
