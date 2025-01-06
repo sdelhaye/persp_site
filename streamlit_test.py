@@ -56,8 +56,10 @@ code="sitex"
 # diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
 # diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
 # diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
+database=load_csv(r'\\bruplan.local\FS\Interdep\GIS\SITEX\WIP\ANALYSE_DB\shp\occup_db_releve.csv')
+releve=load_csv(r'\\bruplan.local\FS\Interdep\GIS\SITEX\WIP\ANALYSE_DB\shp\brat_releve.csv')
 
-database=load_csv('tables/occup_db_releve.csv')
+#database=load_csv('tables/occup_db_releve.csv')
 releve=load_csv('tables/brat_releve.csv')
 if code =="sitex":
     colname="nomen"
@@ -67,7 +69,7 @@ elif code=="pras":
 niveau=1
 # Mise en niveau nomenclature, si NaN => laisse le NaN
 database["nomen"] = database["nomenclature"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
-releve["nomen"] = releve["occupcode_"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+releve["nomen"] = releve["occupcode_id"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
 
 # Liste pour stocker les résultats
 resultats = []
@@ -122,13 +124,13 @@ for id_batiment in np.unique(releve["id_bat"]):
     })
 
 # Créer le DataFrame à partir de la liste de résultats
-diff_occ = pd.DataFrame(resultats)
+diff_occ_fin = pd.DataFrame(resultats)
 
 # merge geom
 # Groupement par id_bat pour obtenir une seule valeur de geometry par id_bat
 # On peut utiliser `first`, `last`, ou une autre méthode d'agrégation
 releve_unique = releve.groupby('id_bat', as_index=False).first()
-diff_occ_fin=pd.merge(diff_occ,releve_unique[["id_bat","geometry"]],on="id_bat",how="left")
+#diff_occ_fin=pd.merge(diff_occ,releve_unique[["id_bat","geom"]],on="id_bat",how="left")
 
 
 
