@@ -70,7 +70,7 @@ database=database[database["date_out"].isna()==True]
 # Définir la date de comparaison
 date_limite = pd.to_datetime(datum)
 # Conversion de la colonne 'date_insert' en datetime
-database['date_insert'] = pd.to_datetime(database['date_insert'], errors='coerce')
+database['date_insert'] = pd.to_datetime(database['date_insert'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
 # Filtrer les lignes où 'date_insert' est antérieure à 'date_limite'
 database = database[database['date_insert'] < date_limite]
 
