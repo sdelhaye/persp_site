@@ -38,41 +38,50 @@ st.markdown(
 date = st.select_slider(
     "Select a date of the state of our DB",
     options=[
-        "23/10/24",
-        "16/12/24",
-        "07/01/25"
+        "01/09/24",
+        "01/10/24",
+        "01/11/24",
+        "01/12/24",
+        "01/01/25",
+        "Today"
+
     ],
 )
 st.write("The date for our DB state is", date)
 
-if date=="23/10/24":
-    datum="2024-10-23"
-elif date=="16/12/24":
-    datum="2024-12-16"
-elif date=="07/01/25":
-    datum="2025-01-25"
+if date=="01/09/24":
+    datum="2024-09-01"
+elif date=="01/10/24":
+    datum="2024-10-01"
+elif date=="01/11/24":
+    datum="2024-10-01"
+elif date=="01/12/24":
+    datum="2024-10-01"
+elif date=="01/01/25":
+    datum="2025-01-01"
+elif date=="Today":
+    datum=pd.to_datetime('today').strftime('%d/%m/%Y')
 ################   READ FILE
 code="sitex"
-# sitex2_occ_block=load_csv('tables/brat_releve_'+datum+'.csv')
-# sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
-# sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
-# diff_occ_fin=load_csv('tables/diff_releve_db'+code+"_"+datum+'.csv')
-# # Transform string column into a list columnt
-# diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
-# diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
-# diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
 sitex2_occ_block=load_csv2('tables/brat_releve.csv')
 database=load_csv2('tables/occup_db_releve.csv')
 releve=load_csv2('tables/brat_releve.csv')
+database_ok=database
 
 # Enlever les lignes qui ont été supprimées càd que les lignes avec une date_out = NaN
 database=database[database["date_out"].isna()==True]
 # Définir la date de comparaison
 date_limite = pd.to_datetime(datum)
-# Conversion de la colonne 'date_insert' en datetime
-database['date_insert'] = pd.to_datetime(database['date_insert'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
-# Filtrer les lignes où 'date_insert' est antérieure à 'date_limite'
-database = database[database['date_insert'] < date_limite]
+# Delete spaces after or before date in string
+database['date_insert'] = database['date_insert'].str.strip()
+# First Convert 
+database_ok['date_insert'] = pd.to_datetime(database['date_insert'], format='%Y-%m-%d %H:%M', errors='coerce')
+# Deuxième passe pour les dates sans secondes (format '%Y-%m-%d %H:%M')
+# Nous appliquons cette conversion uniquement sur les lignes où la première conversion a échoué (NaT)
+mask = database_ok['date_insert'].isna()
+database_ok.loc[mask, 'date_insert'] = pd.to_datetime(database.loc[mask, 'date_insert'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
+database_ok = database_ok[database_ok['date_insert'] < date_limite]
+
 
 if code =="sitex":
     colname="nomen"
@@ -81,13 +90,13 @@ elif code=="pras":
 #Voir chaque bâtiment présent et comparer les résultats au n niveau de nomenclature
 niveau=1
 # Mise en niveau nomenclature, si NaN => laisse le NaN
-database["nomen"] = database["nomenclature"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+database_ok["nomen"] = database_ok["nomenclature"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
 releve["nomen"] = releve["occupcode_id"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
 # Liste pour stocker les résultats
 resultats = []
 sp_miss_tot = pd.DataFrame(columns=["id_bat", "nomen_miss", "miss_area"])
 for id_batiment in np.unique(releve["id_bat"]):
-    occup_db=database[database["id_bat"]==id_batiment]
+    occup_db=database_ok[database_ok["id_bat"]==id_batiment]
     occup_brat=releve[releve["id_bat"]==id_batiment]
     # Filtrer les valeurs "15"==Activité inconnue dans occup_brat
     occup_brat = occup_brat[occup_brat["nomen"] != "15"]    
