@@ -5,10 +5,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ast
 #%%
-
-
 def load_csv(filepath):
     return pd.read_csv(filepath, sep=";")
+
+@st.cache_data
+def load_csv2(filepath):
+    return pd.read_csv(filepath, sep=";")
+
 
 @st.cache_data
 def load_excel(filepath, sheet_name):
@@ -42,21 +45,91 @@ date = st.select_slider(
 st.write("The date for our DB state is", date)
 
 if date=="23/10/24":
-    datum="2024_10_23"
+    datum="2024-10-23"
 elif date=="16/12/24":
-    datum="2024_12_16"
-
+    datum="2024-12-16"
+elif date=="07/01/25":
+    datum="2025-01-25"
 ################   READ FILE
 code="sitex"
-sitex2_occ_block=load_csv('tables/brat_releve_'+datum+'.csv')
-sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
-sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
-diff_occ_fin=load_csv('tables/diff_releve_db'+code+"_"+datum+'.csv')
-# Transform string column into a list columnt
-diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
-diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
-diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
+# sitex2_occ_block=load_csv('tables/brat_releve_'+datum+'.csv')
+# sp_miss_tot=load_csv('tables/sp_miss_tot_db'+code+"_"+datum+'.csv')
+# sp_miss_tot['nomen_miss'] = sp_miss_tot['nomen_miss'].astype(str).str.zfill(2)
+# diff_occ_fin=load_csv('tables/diff_releve_db'+code+"_"+datum+'.csv')
+# # Transform string column into a list columnt
+# diff_occ_fin["miss_nomen_db"]=diff_occ_fin["miss_nomen_db"].apply(lambda x: ast.literal_eval(x))
+# diff_occ_fin["nomen_brat"]=diff_occ_fin["nomen_brat"].apply(lambda x: ast.literal_eval(x))
+# diff_occ_fin["nomen_db"]=diff_occ_fin["nomen_db"].apply(lambda x: ast.literal_eval(x))
+sitex2_occ_block=load_csv2('tables/brat_releve.csv')
+database=load_csv2('tables/occup_db_releve.csv')
+releve=load_csv2('tables/brat_releve.csv')
 
+# Enlever les lignes qui ont été supprimées càd que les lignes avec une date_out = NaN
+database=database[database["date_out"].isna()==True]
+# Définir la date de comparaison
+date_limite = pd.to_datetime(datum)
+# Conversion de la colonne 'date_insert' en datetime
+database['date_insert'] = pd.to_datetime(database['date_insert'], errors='coerce')
+# Filtrer les lignes où 'date_insert' est antérieure à 'date_limite'
+database = database[database['date_insert'] < date_limite]
+
+if code =="sitex":
+    colname="nomen"
+elif code=="pras":
+    colname="regroupement_fill"
+#Voir chaque bâtiment présent et comparer les résultats au n niveau de nomenclature
+niveau=1
+# Mise en niveau nomenclature, si NaN => laisse le NaN
+database["nomen"] = database["nomenclature"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+releve["nomen"] = releve["occupcode_id"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+# Liste pour stocker les résultats
+resultats = []
+sp_miss_tot = pd.DataFrame(columns=["id_bat", "nomen_miss", "miss_area"])
+for id_batiment in np.unique(releve["id_bat"]):
+    occup_db=database[database["id_bat"]==id_batiment]
+    occup_brat=releve[releve["id_bat"]==id_batiment]
+    # Filtrer les valeurs "15"==Activité inconnue dans occup_brat
+    occup_brat = occup_brat[occup_brat["nomen"] != "15"]    
+    
+    nomen_db=set(occup_db[colname].dropna().unique())
+    nomen_brat=set(occup_brat[colname].dropna().unique())
+    # Trouver les valeurs manquantes dans la DB (présentes dans BRAT mais pas dans DB)
+    nomenclatures_manquantes_db = nomen_brat - nomen_db
+    # Trouver les valeurs manquantes dans BRAT (présentes dans DB mais pas dans BRAT)
+    nomenclatures_manquantes_brat = nomen_db - nomen_brat
+    # Ajoute les date de la DB
+    date_in=occup_db["date_insert"]
+    # Nomenclature différente max
+    max_nomenclatures_diff = max(len(nomen_db), len(nomen_brat))
+    area_miss_tot=0
+    for nomen_miss in nomenclatures_manquantes_db:  
+        area_miss=np.sum(occup_brat[occup_brat[colname]==nomen_miss]["area"])
+        area_miss_tot=area_miss_tot+area_miss
+        # Créer un DataFrame temporaire pour concaténer
+        temp_df = pd.DataFrame({
+            "id_bat": [id_batiment],
+            "nomen_miss": [nomen_miss],
+            "miss_area": [area_miss]
+        })
+        # Utiliser pd.concat() pour ajouter la nouvelle ligne à sp_miss_tot
+        sp_miss_tot = pd.concat([sp_miss_tot, temp_df], ignore_index=True)
+    # Stocker les résultats sous forme de dictionnaire
+    resultats.append({
+        'id_bat': id_batiment,
+        'len_occ_brat':len(nomen_brat),
+        'len_occ_db':len(nomen_db),
+        'miss_db': len(nomenclatures_manquantes_db),
+        'miss_brat': len(nomenclatures_manquantes_brat),
+        'miss_all' : len(nomenclatures_manquantes_brat)+len(nomenclatures_manquantes_db),
+        'max_nomen': max_nomenclatures_diff,  # Max de nomenclatures 
+        'miss_nomen_db': list(nomenclatures_manquantes_db),  # Ajout de la liste des valeurs manquantes
+        'miss_area':area_miss_tot,
+        'miss_nomen_brat': list(nomenclatures_manquantes_brat),
+        'nomen_brat': list(nomen_brat),
+        'nomen_db': list(nomen_db),
+    })
+# Créer le DataFrame à partir de la liste de résultats
+diff_occ_fin = pd.DataFrame(resultats)
 
 general=st.radio("Voulez-vous voir la comparaison de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
@@ -296,9 +369,9 @@ elif general=="La superficie plancher":
     else:
         colname="nomen"
     
-    data=data[~data['occupcode_'].str.startswith('15')]
+    data=data[~data['occupcode_id'].str.startswith('15')]
     niveau=1
-    data["nomen"]=data["occupcode_"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+    data["nomen"]=data["occupcode_id"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
 
     # Groupement par la colonne "nomen" et somme des valeurs de la colonne "area"
     result = data.groupby(colname)["area"].sum().reset_index()
@@ -540,7 +613,7 @@ nomen_to_label = {"01": "Logement",    "02": "Hôtel",    "03": "Bureau",    "04
 }
 
 niveau=1
-sitex2_occ_block["nomen"]=sitex2_occ_block["occupcode_"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+sitex2_occ_block["nomen"]=sitex2_occ_block["occupcode_id"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
 
 if code=="pras":
     data=data[data["regroupement_fill"].isna()==False]
@@ -714,8 +787,8 @@ def assign_group(code,niveau):
 
 #### 
 # Toutes les occup faites par le BRAT    
-resultat = sitex2_occ_block.groupby("occupcode_").agg(
-        count_all=("occupcode_", "size"),   # Compter les occurrences
+resultat = sitex2_occ_block.groupby("occupcode_id").agg(
+        count_all=("occupcode_id", "size"),   # Compter les occurrences
         sum_area_all=("area", "sum")  # Somme des valeurs dans la colonne 'area'
     ).reset_index()   
 
@@ -727,18 +800,18 @@ miss=diff_occ_fin[diff_occ_fin['miss_nomen_db'].apply(lambda x: nomen in x)]
 # Ligne du BRAT avec les bat où il nous manque
 bat_miss=sitex2_occ_block[sitex2_occ_block["id_bat"].isin(miss["id_bat"])] 
 # Ne prendre que les lignes avec l'occup voulue
-bat_miss_occup=bat_miss[bat_miss["occupcode_"].str.startswith(nomen)] 
+bat_miss_occup=bat_miss[bat_miss["occupcode_id"].str.startswith(nomen)] 
 
 # Grouper par la colonne 'occup' et compter les occurrences
-resultat_miss = bat_miss_occup.groupby("occupcode_").agg(
-    count=("occupcode_", "size"),   # Compter les occurrences
+resultat_miss = bat_miss_occup.groupby("occupcode_id").agg(
+    count=("occupcode_id", "size"),   # Compter les occurrences
     sum_area=("area", "sum")  # Somme des valeurs dans la colonne 'area'
 ).reset_index()
 #Merge avec all occup from BRAT
-resultat_all=pd.merge(resultat_miss,resultat,on="occupcode_",how='left')
+resultat_all=pd.merge(resultat_miss,resultat,on="occupcode_id",how='left')
 
 # Ajouter une colonne pour les groupes de niveau 2
-resultat_all['group'] = resultat_all['occupcode_'].apply(lambda code: assign_group(code, niveau=niv))
+resultat_all['group'] = resultat_all['occupcode_id'].apply(lambda code: assign_group(code, niveau=niv))
 
 # Grouper par la colonne 'group' et sommer les valeurs
 grouped_df = resultat_all.groupby('group', as_index=False).agg(
