@@ -39,7 +39,8 @@ date = st.select_slider(
     "Select a date of the state of our DB",
     options=[
         "23/10/24",
-        "16/12/24"
+        "16/12/24",
+        "07/01/25"
     ],
 )
 st.write("The date for our DB state is", date)
