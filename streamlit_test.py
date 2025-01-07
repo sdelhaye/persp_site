@@ -5,6 +5,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import ast
 #%%
+
 def load_csv(filepath):
     return pd.read_csv(filepath, sep=";")
 
@@ -49,97 +50,114 @@ date = st.select_slider(
 )
 st.write("The date for our DB state is", date)
 
-if date=="01/09/24":
-    datum="2024-09-01"
-elif date=="01/10/24":
-    datum="2024-10-01"
-elif date=="01/11/24":
-    datum="2024-10-01"
-elif date=="01/12/24":
-    datum="2024-10-01"
-elif date=="01/01/25":
-    datum="2025-01-01"
-elif date=="Today":
-    datum=pd.to_datetime('today').strftime('%d/%m/%Y')
-################   READ FILE
+# Initialisation de l'état de session si non défini
+if "selected_date" not in st.session_state:
+    st.session_state.selected_date = date
+if "diff_occ_fin" not in st.session_state:
+    st.session_state.diff_occ_fin = None  # Initialise à None
 code="sitex"
+################   READ FILE
+
 sitex2_occ_block=load_csv2('tables/brat_releve.csv')
 database=load_csv2('tables/occup_db_releve.csv')
 releve=load_csv2('tables/brat_releve.csv')
-database_ok=database
+# Si la date change, recalculer les données
+if st.session_state.selected_date != date or st.session_state.diff_occ_fin is None:
+    st.session_state.selected_date = date
+    if date=="01/09/24":
+        datum="2024-09-01"
+    elif date=="01/10/24":
+        datum="2024-10-01"
+    elif date=="01/11/24":
+        datum="2024-10-01"
+    elif date=="01/12/24":
+        datum="2024-10-01"
+    elif date=="01/01/25":
+        datum="2025-01-01"
+    elif date=="Today":
+        datum=pd.to_datetime('today').strftime('%d/%m/%Y')
 
-# Enlever les lignes qui ont été supprimées càd que les lignes avec une date_out = NaN
-database=database[database["date_out"].isna()==True]
-# Définir la date de comparaison
-date_limite = pd.to_datetime(datum)
-# Delete spaces after or before date in string
-database['date_insert'] = database['date_insert'].str.strip()
-# First Convert 
-database_ok['date_insert'] = pd.to_datetime(database['date_insert'], format='%Y-%m-%d %H:%M', errors='coerce')
-# Deuxième passe pour les dates sans secondes (format '%Y-%m-%d %H:%M')
-# Nous appliquons cette conversion uniquement sur les lignes où la première conversion a échoué (NaT)
-mask = database_ok['date_insert'].isna()
-database_ok.loc[mask, 'date_insert'] = pd.to_datetime(database.loc[mask, 'date_insert'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
-database_ok = database_ok[database_ok['date_insert'] < date_limite]
+    # Pour pouvoir ne prendre que la date voulue dans ce df
+    database_ok=database
+
+    # Enlever les lignes qui ont été supprimées càd que les lignes avec une date_out = NaN
+    database=database[database["date_out"].isna()==True]
+    # Définir la date de comparaison
+    date_limite = pd.to_datetime(datum)
+    # Delete spaces after or before date in string
+    database['date_insert'] = database['date_insert'].str.strip()
+    # First Convert 
+    database_ok['date_insert'] = pd.to_datetime(database['date_insert'], format='%Y-%m-%d %H:%M', errors='coerce')
+    # Deuxième passe pour les dates sans secondes (format '%Y-%m-%d %H:%M')
+    # Nous appliquons cette conversion uniquement sur les lignes où la première conversion a échoué (NaT)
+    mask = database_ok['date_insert'].isna()
+    database_ok.loc[mask, 'date_insert'] = pd.to_datetime(database.loc[mask, 'date_insert'], format='%Y-%m-%d %H:%M:%S', errors='coerce')
+    database_ok = database_ok[database_ok['date_insert'] < date_limite]
 
 
-if code =="sitex":
-    colname="nomen"
-elif code=="pras":
-    colname="regroupement_fill"
-#Voir chaque bâtiment présent et comparer les résultats au n niveau de nomenclature
-niveau=1
-# Mise en niveau nomenclature, si NaN => laisse le NaN
-database_ok["nomen"] = database_ok["nomenclature"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
-releve["nomen"] = releve["occupcode_id"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
-# Liste pour stocker les résultats
-resultats = []
-sp_miss_tot = pd.DataFrame(columns=["id_bat", "nomen_miss", "miss_area"])
-for id_batiment in np.unique(releve["id_bat"]):
-    occup_db=database_ok[database_ok["id_bat"]==id_batiment]
-    occup_brat=releve[releve["id_bat"]==id_batiment]
-    # Filtrer les valeurs "15"==Activité inconnue dans occup_brat
-    occup_brat = occup_brat[occup_brat["nomen"] != "15"]    
-    
-    nomen_db=set(occup_db[colname].dropna().unique())
-    nomen_brat=set(occup_brat[colname].dropna().unique())
-    # Trouver les valeurs manquantes dans la DB (présentes dans BRAT mais pas dans DB)
-    nomenclatures_manquantes_db = nomen_brat - nomen_db
-    # Trouver les valeurs manquantes dans BRAT (présentes dans DB mais pas dans BRAT)
-    nomenclatures_manquantes_brat = nomen_db - nomen_brat
-    # Ajoute les date de la DB
-    date_in=occup_db["date_insert"]
-    # Nomenclature différente max
-    max_nomenclatures_diff = max(len(nomen_db), len(nomen_brat))
-    area_miss_tot=0
-    for nomen_miss in nomenclatures_manquantes_db:  
-        area_miss=np.sum(occup_brat[occup_brat[colname]==nomen_miss]["area"])
-        area_miss_tot=area_miss_tot+area_miss
-        # Créer un DataFrame temporaire pour concaténer
-        temp_df = pd.DataFrame({
-            "id_bat": [id_batiment],
-            "nomen_miss": [nomen_miss],
-            "miss_area": [area_miss]
+    if code =="sitex":
+        colname="nomen"
+    elif code=="pras":
+        colname="regroupement_fill"
+    #Voir chaque bâtiment présent et comparer les résultats au n niveau de nomenclature
+    niveau=1
+    # Mise en niveau nomenclature, si NaN => laisse le NaN
+    database_ok["nomen"] = database_ok["nomenclature"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+    releve["nomen"] = releve["occupcode_id"].apply(lambda x: x[:2 + 3 * (niveau - 1)] if not pd.isna(x) else np.nan)
+    # Liste pour stocker les résultats
+    resultats = []
+    sp_miss_tot = pd.DataFrame(columns=["id_bat", "nomen_miss", "miss_area"])
+    for id_batiment in np.unique(releve["id_bat"]):
+        occup_db=database_ok[database_ok["id_bat"]==id_batiment]
+        occup_brat=releve[releve["id_bat"]==id_batiment]
+        # Filtrer les valeurs "15"==Activité inconnue dans occup_brat
+        occup_brat = occup_brat[occup_brat["nomen"] != "15"]    
+        
+        nomen_db=set(occup_db[colname].dropna().unique())
+        nomen_brat=set(occup_brat[colname].dropna().unique())
+        # Trouver les valeurs manquantes dans la DB (présentes dans BRAT mais pas dans DB)
+        nomenclatures_manquantes_db = nomen_brat - nomen_db
+        # Trouver les valeurs manquantes dans BRAT (présentes dans DB mais pas dans BRAT)
+        nomenclatures_manquantes_brat = nomen_db - nomen_brat
+        # Ajoute les date de la DB
+        date_in=occup_db["date_insert"]
+        # Nomenclature différente max
+        max_nomenclatures_diff = max(len(nomen_db), len(nomen_brat))
+        area_miss_tot=0
+        for nomen_miss in nomenclatures_manquantes_db:  
+            area_miss=np.sum(occup_brat[occup_brat[colname]==nomen_miss]["area"])
+            area_miss_tot=area_miss_tot+area_miss
+            # Créer un DataFrame temporaire pour concaténer
+            temp_df = pd.DataFrame({
+                "id_bat": [id_batiment],
+                "nomen_miss": [nomen_miss],
+                "miss_area": [area_miss]
+            })
+            # Utiliser pd.concat() pour ajouter la nouvelle ligne à sp_miss_tot
+            sp_miss_tot = pd.concat([sp_miss_tot, temp_df], ignore_index=True)
+        # Stocker les résultats sous forme de dictionnaire
+        resultats.append({
+            'id_bat': id_batiment,
+            'len_occ_brat':len(nomen_brat),
+            'len_occ_db':len(nomen_db),
+            'miss_db': len(nomenclatures_manquantes_db),
+            'miss_brat': len(nomenclatures_manquantes_brat),
+            'miss_all' : len(nomenclatures_manquantes_brat)+len(nomenclatures_manquantes_db),
+            'max_nomen': max_nomenclatures_diff,  # Max de nomenclatures 
+            'miss_nomen_db': list(nomenclatures_manquantes_db),  # Ajout de la liste des valeurs manquantes
+            'miss_area':area_miss_tot,
+            'miss_nomen_brat': list(nomenclatures_manquantes_brat),
+            'nomen_brat': list(nomen_brat),
+            'nomen_db': list(nomen_db),
         })
-        # Utiliser pd.concat() pour ajouter la nouvelle ligne à sp_miss_tot
-        sp_miss_tot = pd.concat([sp_miss_tot, temp_df], ignore_index=True)
-    # Stocker les résultats sous forme de dictionnaire
-    resultats.append({
-        'id_bat': id_batiment,
-        'len_occ_brat':len(nomen_brat),
-        'len_occ_db':len(nomen_db),
-        'miss_db': len(nomenclatures_manquantes_db),
-        'miss_brat': len(nomenclatures_manquantes_brat),
-        'miss_all' : len(nomenclatures_manquantes_brat)+len(nomenclatures_manquantes_db),
-        'max_nomen': max_nomenclatures_diff,  # Max de nomenclatures 
-        'miss_nomen_db': list(nomenclatures_manquantes_db),  # Ajout de la liste des valeurs manquantes
-        'miss_area':area_miss_tot,
-        'miss_nomen_brat': list(nomenclatures_manquantes_brat),
-        'nomen_brat': list(nomen_brat),
-        'nomen_db': list(nomen_db),
-    })
-# Créer le DataFrame à partir de la liste de résultats
-diff_occ_fin = pd.DataFrame(resultats)
+    # Créer le DataFrame à partir de la liste de résultats
+    diff_occ_fin = pd.DataFrame(resultats)
+    # Pour pouvoir stocker les résultats de ces df dans la session
+    st.session_state.diff_occ_fin = pd.DataFrame(resultats)
+    st.session_state.sp_miss_tot= pd.DataFrame(sp_miss_tot)
+# Utiliser les résultats stockés
+diff_occ_fin = st.session_state.diff_occ_fin
+sp_miss_tot = st.session_state.sp_miss_tot
 
 general=st.radio("Voulez-vous voir la comparaison de notre DB selon :",
                ["Le nombre d'occupation", "La superficie plancher" ])
