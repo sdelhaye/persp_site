@@ -22,7 +22,7 @@ def load_excel(filepath, sheet_name):
 st.markdown(
     """
     <h1 style='text-align: center; font-size: 36px; color: black;'>
-    SITEX2.0 - Comparaison BD et relevé du BRAT v2
+    SITEX2.0 - Comparaison BD et relevé du BRAT v2bis
     </h1>
     """,
     unsafe_allow_html=True
