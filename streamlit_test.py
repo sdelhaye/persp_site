@@ -22,7 +22,7 @@ def load_excel(filepath, sheet_name):
 st.markdown(
     """
     <h1 style='text-align: center; font-size: 36px; color: black;'>
-    SITEX2.0 - Comparaison BD et relevé du BRAT v2bis
+    SITEX2.0 - Comparaison BD et relevé du BRAT v2
     </h1>
     """,
     unsafe_allow_html=True
@@ -61,6 +61,7 @@ code="sitex"
 sitex2_occ_block=load_csv2('tables/brat_releve.csv')
 database=load_csv2('tables/occup_db_releve.csv')
 releve=load_csv2('tables/brat_releve.csv')
+
 # Si la date change, recalculer les données
 if st.session_state.selected_date != date or st.session_state.diff_occ_fin is None:
     st.session_state.selected_date = date
