@@ -76,7 +76,8 @@ if st.session_state.selected_date != date or st.session_state.diff_occ_fin is No
     elif date=="01/01/25":
         datum="2025-01-01"
     elif date=="Today":
-        datum=pd.to_datetime('today').strftime('%d/%m/%Y')
+        datum=pd.to_datetime("now").strftime("%d/%m/%Y %H:%M")
+
 
     # Pour pouvoir ne prendre que la date voulue dans ce df
     database_ok=database
@@ -84,7 +85,7 @@ if st.session_state.selected_date != date or st.session_state.diff_occ_fin is No
     # Enlever les lignes qui ont été supprimées càd que les lignes avec une date_out = NaN
     database=database[database["date_out"].isna()==True]
     # Définir la date de comparaison
-    date_limite = pd.to_datetime(datum)
+    date_limite = pd.to_datetime(datum, dayfirst=True, errors="coerce")
     # Delete spaces after or before date in string
     database['date_insert'] = database['date_insert'].str.strip()
     # First Convert 
