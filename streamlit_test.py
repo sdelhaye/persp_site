@@ -76,6 +76,8 @@ if st.session_state.selected_date != date or st.session_state.diff_occ_fin is No
         datum="2024-10-01"
     elif date=="01/01/25":
         datum="2025-01-01"
+    elif date=="01/04/25":
+        datum="2025-04-01"
     elif date=="Today":
         datum=pd.to_datetime("now").strftime("%d/%m/%Y %H:%M")
 
