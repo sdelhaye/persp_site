@@ -749,11 +749,11 @@ categ=st.radio("Quelle catégorie voulez-vous voir ?",
                 "Culte","Transport","Ambassade","Aide à la pop","Divertissement",
                 "Energie","Sport"])
 column_txt=st.radio("Voulez voir le manque de notre DB selon :",
-               ["Le nombre d'occupation", "La superficie plancher" ])
+               ["Le nombre de bâtiment", "La superficie plancher" ])
 niv_txt=st.radio("Précision de la nomenclature :",
                ["Niveau 2", "Niveau 3" ])
 layout=st.radio("Représentation des données  :",
-               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas","BRAT + ce que notre DB retrouve" ])
+               ["BRAT uniquement", "BRAT + ce que notre DB ne trouve pas" ])
 
 if categ == "Logement":
     nomen="01"
@@ -783,7 +783,7 @@ elif categ=="Energie":
     nomen="14"
 elif categ=="Sport":
     nomen="16"
-if column_txt=="Le nombre d'occupation":
+if column_txt=="Le nombre de bâtiment":
     column="count"
 elif column_txt=="La superficie plancher":
     column="sum_area"
@@ -793,8 +793,6 @@ elif niv_txt=="Niveau 3":
     niv=3
 
 
-# Date de notre DB 
-datum="2024_10_23"
 #### Si on veut nomenclature sitex ou pras
 code="sitex"
 # Si on veut enlever burea acc = False
@@ -818,40 +816,41 @@ def assign_group(code,niveau):
                 return niv1 + "."+ niv2 + suffix +".00"
         return "others"  # Si aucune correspondance  
 
-#### 
-# Toutes les occup faites par le BRAT    
-resultat = sitex2_occ_block.groupby("occupcode_id").agg(
-        count_all=("occupcode_id", "size"),   # Compter les occurrences
+####
+sitex2_occ_block['group'] = sitex2_occ_block['occupcode_id'].apply(lambda code: assign_group(code, niveau=niv))
+
+resultat = sitex2_occ_block.groupby(["id_bat","group"]).agg(
+        count_all=("group", "size"),   # Compter les occurrences
         sum_area_all=("area", "sum")  # Somme des valeurs dans la colonne 'area'
-    ).reset_index()   
+    ).reset_index()      
 
 sitex2_dico_affect = load_excel('tables/Traduction_nomenclature_SitEx_PRAS.xlsx',sheet_name=1)
 code_sitex2=sitex2_dico_affect[["CODE","IntituleFr"]]
 
 miss=diff_occ_fin[diff_occ_fin['miss_nomen_db'].apply(lambda x: nomen in x)]
-
 # Ligne du BRAT avec les bat où il nous manque
 bat_miss=sitex2_occ_block[sitex2_occ_block["id_bat"].isin(miss["id_bat"])] 
 # Ne prendre que les lignes avec l'occup voulue
-bat_miss_occup=bat_miss[bat_miss["occupcode_id"].str.startswith(nomen)] 
+bat_miss_occup=bat_miss[bat_miss["group"].str.startswith(nomen)] 
 
 # Grouper par la colonne 'occup' et compter les occurrences
-resultat_miss = bat_miss_occup.groupby("occupcode_id").agg(
-    count=("occupcode_id", "size"),   # Compter les occurrences
-    sum_area=("area", "sum")  # Somme des valeurs dans la colonne 'area'
+resultat_miss = bat_miss_occup.groupby("id_bat").agg(
+    sum_miss=("area", "sum")  # Somme des valeurs dans la colonne 'area'
 ).reset_index()
-#Merge avec all occup from BRAT
-resultat_all=pd.merge(resultat_miss,resultat,on="occupcode_id",how='left')
 
-# Ajouter une colonne pour les groupes de niveau 2
-resultat_all['group'] = resultat_all['occupcode_id'].apply(lambda code: assign_group(code, niveau=niv))
+# Merge ce qu'il nous manque (si superficie à area_miss alors on apas l'info dans notre DB)
+resultat_all=pd.merge(resultat[resultat["group"].str.startswith(nomen)],resultat_miss,on="id_bat",how='left')
 
+# Chaque bâtiment compte pour 1 occurence
+resultat_all["count_all"]=1
+resultat_all["sum_miss"]=resultat_all["sum_miss"].fillna(0)
 # Grouper par la colonne 'group' et sommer les valeurs
 grouped_df = resultat_all.groupby('group', as_index=False).agg(
-    count=('count', 'sum'),
-    sum_area=("sum_area",'sum'),
+    count=('sum_miss', lambda x: (x != 0).sum()), #compte le nombre de bâtiment qu'on ne retrouve pas
+    sum_area=("sum_miss",'sum'), # Superficie qu'il nous manque
     count_all=('count_all', 'sum'),
     sum_area_all=("sum_area_all",'sum')).reset_index()
+
 # Trouver le label de chaque catégorie
 grouped_df=pd.merge(grouped_df,code_sitex2,left_on="group",right_on="CODE",how="left")
 ############## PLOT
@@ -863,7 +862,7 @@ if column=="sum_area":
     text="m²\n relevés par le BRAT"
 else:
     name=""
-    text="\noccupations"
+    text="\n bâtiments"
 
 # Étape 1 : Calculer les totaux des occurrences pour chaque catégorie
 category_total_brat = grouped_df[column+"_all"]
