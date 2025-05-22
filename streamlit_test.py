@@ -46,8 +46,8 @@ date = st.select_slider(
         "01/01/25",
         "01/04/25",
         "Today"
-
     ],
+    value="Today"
 )
 st.write("The date for our DB state is", date)
 
@@ -62,6 +62,25 @@ code="sitex"
 sitex2_occ_block=load_csv2('tables/brat_releve.csv')
 database=load_csv2('tables/occup_db_releve.csv')
 releve=load_csv2('tables/brat_releve.csv')
+
+### Pouvoir séléectionner les données avec les sources diff
+# Récupère toutes les sources uniques
+sources_uniques = database["source"].dropna().unique()
+# Multiselect pour choisir les sources à afficher
+sources_selectionnees = st.multiselect(
+    "Choisissez les sources à inclure :",
+    options=sources_uniques,
+    default=sources_uniques  # Tout est sélectionné par défaut
+)
+# Filtrage du DataFrame
+database = database[database["source"].isin(sources_selectionnees)]
+
+# Gérer les changements de sélection
+if "sources_selectionnees" not in st.session_state:
+    st.session_state.sources_selectionnees = sources_selectionnees
+elif st.session_state.sources_selectionnees != sources_selectionnees:
+    st.session_state.sources_selectionnees = sources_selectionnees
+    st.session_state.diff_occ_fin = None  # Forcer le recalcul
 
 # Si la date change, recalculer les données
 if st.session_state.selected_date != date or st.session_state.diff_occ_fin is None:
