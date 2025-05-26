@@ -30,7 +30,7 @@ st.markdown(
 st.markdown(
     """
     <p style='text-align: left; font-size: 20px; color: black;'>
-    Résultats des 5318 bâtiments du relevé du BRAT (ZEMU + ZIR) au niveau 1 de la nomenclature avec une comparaison de ce que notre DB retrouve ou pas
+    Résultats des relevés SITEX (fait principalement par le BRAT) au niveau 1 de la nomenclature avec une comparaison de ce que notre DB ne retrouve pas
     </p>
     """,
     unsafe_allow_html=True
@@ -72,7 +72,7 @@ releve=releve[~releve["occupcode_id"].astype(str).str.startswith("49.")]
 zones_uniques = sitex2_occ_block["zone"].dropna().unique()
 # Multiselect pour choisir les sources à afficher
 zones_selectionnees = st.multiselect(
-    "Choisissez les zones de relevé à inclure :",
+    "Choisissez les zones de relevés à inclure :",
     options=zones_uniques,
     default=zones_uniques  # Tout est sélectionné par défaut
 )
