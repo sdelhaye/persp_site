@@ -57,11 +57,36 @@ if "selected_date" not in st.session_state:
 if "diff_occ_fin" not in st.session_state:
     st.session_state.diff_occ_fin = None  # Initialise à None
 code="sitex"
-################   READ FILE
 
+################   READ FILE
 sitex2_occ_block=load_csv2('tables/brat_releve.csv')
 database=load_csv2('tables/occup_db_releve.csv')
 releve=load_csv2('tables/brat_releve.csv')
+
+# Supprimer les occupations toitures (49....)
+sitex2_occ_block=sitex2_occ_block[~sitex2_occ_block["occupcode_id"].astype(str).str.startswith("49.")]
+releve=releve[~releve["occupcode_id"].astype(str).str.startswith("49.")]
+
+### Pouvoir séléectionner les zones de relevés précises
+# Récupère toutes les sources uniques
+zones_uniques = sitex2_occ_block["zone"].dropna().unique()
+# Multiselect pour choisir les sources à afficher
+zones_selectionnees = st.multiselect(
+    "Choisissez les zones de relevé à inclure :",
+    options=zones_uniques,
+    default=zones_uniques  # Tout est sélectionné par défaut
+)
+# Filtrage du DataFrame
+sitex2_occ_block = sitex2_occ_block[sitex2_occ_block["zone"].isin(zones_selectionnees)]
+releve=releve[releve["zone"].isin(zones_selectionnees)]
+
+# Gérer les changements de sélection
+if "zones_selectionnees" not in st.session_state:
+    st.session_state.zones_selectionnees = zones_selectionnees
+elif st.session_state.zones_selectionnees != zones_selectionnees:
+    st.session_state.zones_selectionnees = zones_selectionnees
+    st.session_state.diff_occ_fin = None  # Forcer le recalcul
+
 
 ### Pouvoir séléectionner les données avec les sources diff
 # Récupère toutes les sources uniques
