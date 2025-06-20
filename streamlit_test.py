@@ -4,6 +4,9 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import ast
+import os
+import datetime
+
 #%%
 
 def load_csv(filepath):
@@ -18,6 +21,13 @@ def load_csv2(filepath):
 def load_excel(filepath, sheet_name):
     return pd.read_excel(filepath, sheet_name=sheet_name)
 
+
+# Obtenir la date de création du fichier brat_releve.csv
+csv_path = 'tables/brat_releve.csv'
+creation_time = os.path.getmtime(csv_path)  # timestamp
+date_creation_csv = datetime.datetime.fromtimestamp(creation_time).strftime('%d/%m/%Y')
+
+
 # Visualisation sur l'application
 st.markdown(
     """
@@ -28,9 +38,10 @@ st.markdown(
     unsafe_allow_html=True
 )
 st.markdown(
-    """
+    f"""
     <p style='text-align: left; font-size: 20px; color: black;'>
-    Résultats des relevés SITEX (fait principalement par le BRAT) au niveau 1 de la nomenclature avec une comparaison de ce que notre DB ne retrouve pas
+    Résultats des relevés SITEX (fait principalement par le BRAT) au niveau 1 de la nomenclature avec une comparaison de ce que notre DB ne retrouve pas.<br>
+    <b> Date intégration des relevés :</b> {date_creation_csv}
     </p>
     """,
     unsafe_allow_html=True
@@ -49,7 +60,10 @@ date = st.select_slider(
     ],
     value="Today"
 )
-st.write("The date for our DB state is", date)
+st.markdown(
+    f"<p style='font-size:20px; color:black;'><b>La date de notre DB est :</b> {date}</p>",
+    unsafe_allow_html=True
+)
 
 # Initialisation de l'état de session si non défini
 if "selected_date" not in st.session_state:
