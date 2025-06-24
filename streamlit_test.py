@@ -23,7 +23,7 @@ def load_excel(filepath, sheet_name):
 
 
 # Obtenir la date de création du fichier brat_releve.csv
-csv_path = 'tables/brat_releve.csv'
+csv_path = r'\\bruplan.local\FS\Interdep\GIS\SITEX\WIP\ANALYSE_DB\shp\brat_releve_all.shp'
 creation_time = os.path.getmtime(csv_path)  # timestamp
 date_creation_csv = datetime.datetime.fromtimestamp(creation_time).strftime('%d/%m/%Y')
 
